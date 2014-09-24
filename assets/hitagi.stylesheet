@@ -1,7 +1,6 @@
 * {
 	background: #ECECEC;
 	color: #DDDDDD;
-	border: none;
 }
 
 QWidget::item:selected {
@@ -193,6 +192,7 @@ QTabBar {
 QTabBar::tab {
 	border-radius: 0px;
 	padding: 4px;
+	background: yellow;
 	margin: 4px;
 }
 
@@ -283,5 +283,6 @@ QProgressBar::chunk {
 }
 
 QMenu::separator {
-	background: #000;
+	background: #444;
+	height: 1px;
 }

@@ -1,13 +1,15 @@
 #!/usr/bin/env python
-import sys, json
+import sys, json, webbrowser
 from pathlib import Path
 
 from PySide import QtCore
-from PySide.QtGui import QApplication, QMainWindow, QFileDialog, QImage, QPixmap, QMessageBox, QDialog, QLabel, QVBoxLayout
+from PySide.QtGui import QApplication, QMainWindow, QFileDialog, QImage, QPixmap, QMessageBox, QDialog, QLabel, QVBoxLayout, QIcon
+
+from hitalib import Model, Dialogs
 
 __version__ = "1.0"
 
-from ui.hitagi_ui import Ui_Mainwindow
+from hitalib.ui.hitagi_ui import Ui_Mainwindow
 
 class MainWindow(QMainWindow, Ui_Mainwindow):
     resizeCompleted = QtCore.Signal()
@@ -15,24 +17,30 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-
-        self.stylesheet = "ui/hitagi.stylesheet"
+        """
+        self.stylesheet = "assets/hitagi.stylesheet"
         with open(self.stylesheet, "r") as fh:
             self.setStyleSheet(fh.read())
+        """
 
         self.headerContainer.setText("Hitagi Reader " + __version__)
 
-        self.logoContainer.setPixmap(QPixmap("ui/logo.png"))
+        self.logoContainer.setPixmap(QPixmap("assets/logo.png"))
 
         self._resize_timer = None
         self.resizeCompleted.connect(self.handleResizeCompleted)
 
-        # menu actions
-        self.actionOpenDirectory.triggered.connect(self.changeDirectory)
+        # File
+        self.actionSearch_online.triggered.connect(self.showSearchOnline)
+        self.actionOptions.triggered.connect(self.showOptions)
+        self.actionExit.triggered.connect(self.close)
+        # Folder
+        self.actionOpen_Directory.triggered.connect(self.changeDirectory)
+        # Display
         self.actionFullscreen.triggered.connect(self.toggleFullscreen)
-        self.actionHelpChangelog.triggered.connect(self.aboutChangelog)
-        self.actionHelpHitagi.triggered.connect(self.aboutHitagi)
-        self.actionHelpPySide.triggered.connect(self.aboutPyside)
+        # Help
+        self.actionDialog_Changelog.triggered.connect(self.aboutChangelog)
+        self.actionDialog_About.triggered.connect(self.aboutHitagi)
 
         # variables
         self.image_index = -1 # index of current shown image
@@ -50,56 +58,17 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         self.is_maximized = self.isMaximized()
         self.window_dimensions = self.geometry()
 
+    def showSearchOnline(self):
+        webbrowser.open("https://images.google.com/imghp", 2) 
+
+    def showOptions(self):
+        Dialogs.Settings(self).show()
+
     def aboutChangelog(self):
-        self.dialog_pyside = QDialog()
-        self.dialog_pyside.setFixedSize(500, 150)
-        self.dialog_pyside.setWindowTitle("About PySide")
-
-        text = QLabel("PySide is an open source software project providing Python bindings for the Qt framework.\n"
-            "Qt is a cross-platform application and UI framework, allowing the developers to write applications\n"
-            "once and deploy them across many operating systems without rewriting the source code, while Python\n"
-            "is a modern, dynamic programming language with a vivid developer community. Combining the power of\n"
-            "Qt and Python, PySide provides the wealth of Qt framework for developers writing software in Python\n"
-            "and presents a first-class rapid application development platform available on all major operating systems.")
-        layout = QVBoxLayout()
-        layout.addWidget(text)
-
-        self.dialog_pyside.setLayout(layout)
-        self.dialog_pyside.show()
+        Dialogs.Changelog(self).show()
 
     def aboutHitagi(self):
-        self.dialog_pyside = QDialog()
-        self.dialog_pyside.setFixedSize(500, 150)
-        self.dialog_pyside.setWindowTitle("About PySide")
-
-        text = QLabel("PySide is an open source software project providing Python bindings for the Qt framework.\n"
-            "Qt is a cross-platform application and UI framework, allowing the developers to write applications\n"
-            "once and deploy them across many operating systems without rewriting the source code, while Python\n"
-            "is a modern, dynamic programming language with a vivid developer community. Combining the power of\n"
-            "Qt and Python, PySide provides the wealth of Qt framework for developers writing software in Python\n"
-            "and presents a first-class rapid application development platform available on all major operating systems.")
-        layout = QVBoxLayout()
-        layout.addWidget(text)
-
-        self.dialog_pyside.setLayout(layout)
-        self.dialog_pyside.show()
-
-    def aboutPyside(self):
-        self.dialog_pyside = QDialog()
-        self.dialog_pyside.setFixedSize(500, 150)
-        self.dialog_pyside.setWindowTitle("About PySide")
-
-        text = QLabel("PySide is an open source software project providing Python bindings for the Qt framework.\n"
-            "Qt is a cross-platform application and UI framework, allowing the developers to write applications\n"
-            "once and deploy them across many operating systems without rewriting the source code, while Python\n"
-            "is a modern, dynamic programming language with a vivid developer community. Combining the power of\n"
-            "Qt and Python, PySide provides the wealth of Qt framework for developers writing software in Python\n"
-            "and presents a first-class rapid application development platform available on all major operating systems.")
-        layout = QVBoxLayout()
-        layout.addWidget(text)
-
-        self.dialog_pyside.setLayout(layout)
-        self.dialog_pyside.show()
+        Dialogs.Hitagi(self).show()
 
     def updateResizeTimer(self, interval=None):
         if self._resize_timer is not None:
@@ -211,7 +180,7 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         # else NOT in fullscreen mode
         else: 
             if self.image_index == -1:
-                QMessageBox.information(self, "Error", "Open or select a directory first before entering fullscreen mode.")
+                #QMessageBox.information(self, "Error", "Open or select a directory first before entering fullscreen mode.")
                 return
             else:
                 # save properties to restore later on
