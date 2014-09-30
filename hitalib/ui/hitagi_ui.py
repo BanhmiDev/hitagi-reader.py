@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/hitagi.ui'
+# Form implementation generated from reading ui file 'hitagi.ui'
 #
-# Created: Wed Sep 24 16:33:19 2014
+# Created: Wed Sep 24 17:21:38 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -65,6 +65,14 @@ class Ui_Mainwindow(object):
         self.verticalLayout.addLayout(self.gridLayout)
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.treeView = QtGui.QTreeView(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.treeView.sizePolicy().hasHeightForWidth())
+        self.treeView.setSizePolicy(sizePolicy)
+        self.treeView.setObjectName("treeView")
+        self.horizontalLayout.addWidget(self.treeView)
         self.imageContainer = QtGui.QLabel(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)

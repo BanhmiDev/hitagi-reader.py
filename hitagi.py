@@ -3,7 +3,7 @@ import sys, json, webbrowser
 from pathlib import Path
 
 from PySide import QtCore
-from PySide.QtGui import QApplication, QMainWindow, QFileDialog, QImage, QPixmap, QMessageBox, QDialog, QLabel, QVBoxLayout, QIcon
+from PySide.QtGui import QApplication, QMainWindow, QFileDialog, QImage, QPixmap, QMessageBox, QDialog, QLabel, QVBoxLayout, QIcon, QFileSystemModel
 
 from hitalib import Model, Dialogs
 
@@ -17,6 +17,16 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+        
+        self.dirmodel = QFileSystemModel()
+        self.dirmodel.setRootPath("")
+        self.dirmodel.setNameFilters(["*.png"]);
+        self.dirmodel.setNameFilterDisables(False)
+        self.treeView.setModel(self.dirmodel)
+        self.treeView.setIndentation(10);
+        self.treeView.setRootIndex(self.dirmodel.index(QtCore.QDir.currentPath()))
+        self.treeView.hideColumn(1)
+
         """
         self.stylesheet = "assets/hitagi.stylesheet"
         with open(self.stylesheet, "r") as fh:
