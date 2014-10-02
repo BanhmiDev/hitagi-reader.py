@@ -17,7 +17,6 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
-        
         self.dirmodel = QFileSystemModel()
         self.dirmodel.setRootPath("")
         self.dirmodel.setNameFilters(["*.png"]);
@@ -26,6 +25,8 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         self.treeView.setIndentation(10);
         self.treeView.setRootIndex(self.dirmodel.index(QtCore.QDir.currentPath()))
         self.treeView.hideColumn(1)
+
+        self.splitter_2.splitterMoved.connect(self.updateImage);
 
         """
         self.stylesheet = "assets/hitagi.stylesheet"
@@ -139,12 +140,10 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
     def updateImage(self):
         """Display and update image."""
 
-        self.setWindowTitle("Hitagi - " + str(self.image_paths[self.image_index]) + "    " + str(self.image_index + 1) + " of " + str(len(self.image_paths)))
-        image = QImage(str(self.image_paths[self.image_index]))
-        self.statusBar.showMessage(
-            str(self.image_paths[self.image_index]) + "    " + str(self.image_index + 1) + " of " + str(len(self.image_paths)))
-
         if self.image_index != -1:
+            self.setWindowTitle("Hitagi - " + str(self.image_paths[self.image_index]) + "    " + str(self.image_index + 1) + " of " + str(len(self.image_paths)))
+            image = QImage(str(self.image_paths[self.image_index]))
+            self.statusBar.showMessage(str(self.image_paths[self.image_index]) + "    " + str(self.image_index + 1) + " of " + str(len(self.image_paths)))
             image = QImage(str(self.image_paths[self.image_index]))
             container_size = (self.imageContainer.width(), self.imageContainer.height())
 
