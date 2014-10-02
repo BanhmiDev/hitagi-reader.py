@@ -17,14 +17,31 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+
+        # Directory viewing
         self.dirmodel = QFileSystemModel()
         self.dirmodel.setRootPath("")
+        self.dirmodel.setFilter(QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllDirs)
         self.dirmodel.setNameFilters(["*.png"]);
         self.dirmodel.setNameFilterDisables(False)
         self.treeView.setModel(self.dirmodel)
         self.treeView.setIndentation(10);
         self.treeView.setRootIndex(self.dirmodel.index(QtCore.QDir.currentPath()))
         self.treeView.hideColumn(1)
+
+        self.selectionModel = self.treeView.selectionModel()
+
+        self.treeView.clicked[QtCore.QModelIndex].connect(self.viewDirectory) 
+
+        # File viewing
+        self.filemodel = QFileSystemModel()
+        self.filemodel.setFilter(QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)
+
+
+
+        self.listView.setModel(self.filemodel)  
+
+        self.listView.clicked[QtCore.QModelIndex].connect(self.viewFile) 
 
         self.splitter_2.splitterMoved.connect(self.updateImage);
 
@@ -68,6 +85,15 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         # window properties
         self.is_maximized = self.isMaximized()
         self.window_dimensions = self.geometry()
+
+    def viewFile(self, index):
+        self.changeDirectory(self.dirmodel.filePath(index))
+
+    def viewDirectory(self, index):
+        index = self.selectionModel.currentIndex()
+        directory = self.dirmodel.filePath(index)
+        self.filemodel.setRootPath(directory)
+        self.listView.setRootIndex(self.filemodel.index(directory))
 
     def showSearchOnline(self):
         webbrowser.open("https://images.google.com/imghp", 2) 
@@ -114,9 +140,13 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         elif e.key() == QtCore.Qt.Key_Escape and self.is_fullscreen:
             self.toggleFullscreen()
 
-    def changeDirectory(self):
+    def changeDirectory(self, directory=None):
         """Open file dialog to choose images directory."""
-        new_directory = QFileDialog.getExistingDirectory(self, self.tr("Choose directory"), self.settings['currentDir'])
+        # if no directory, open dialog
+        if not directory:
+            new_directory = QFileDialog.getExistingDirectory(self, self.tr("Choose directory"), self.settings['currentDir'])
+        else:
+            new_directory = directory
 
         # if canceled, return nothing
         if not new_directory:
