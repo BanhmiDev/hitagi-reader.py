@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hitagi.ui'
 #
-# Created: Thu Oct  2 17:08:00 2014
+# Created: Fri Oct  3 12:56:53 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -63,6 +63,11 @@ class Ui_Mainwindow(object):
         self.horizontalLayout.addWidget(self.headerContainer)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.splitter_2 = QtGui.QSplitter(self.centralwidget)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.splitter_2.sizePolicy().hasHeightForWidth())
+        self.splitter_2.setSizePolicy(sizePolicy)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName("splitter_2")
         self.splitter = QtGui.QSplitter(self.splitter_2)
@@ -92,7 +97,7 @@ class Ui_Mainwindow(object):
         self.imageContainer = QtGui.QLabel(self.splitter_2)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setVerticalStretch(5)
         sizePolicy.setHeightForWidth(self.imageContainer.sizePolicy().hasHeightForWidth())
         self.imageContainer.setSizePolicy(sizePolicy)
         self.imageContainer.setStyleSheet("")
