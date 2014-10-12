@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-import sys, json, webbrowser
+import sys, json, webbrowser, subprocess
 from pathlib import Path
 
 from PySide import QtCore
-from PySide.QtGui import QApplication, QMainWindow, QFileDialog, QImage, QPixmap, QMessageBox, QDialog, QLabel, QVBoxLayout, QIcon, QFileSystemModel
+from PySide.QtGui import QApplication, QMainWindow, QFileDialog, QImage, QPixmap, QMessageBox, QDialog, QLabel, QVBoxLayout, QIcon, QFileSystemModel, QClipboard
 
 from hitalib import Model, Dialogs
 
@@ -24,26 +24,23 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         self.dirmodel.setFilter(QtCore.QDir.NoDotAndDotDot | QtCore.QDir.AllDirs)
         self.dirmodel.setNameFilters(["*.png"]);
         self.dirmodel.setNameFilterDisables(False)
+        
         self.treeView.setModel(self.dirmodel)
         self.treeView.setIndentation(10);
         self.treeView.setRootIndex(self.dirmodel.index(QtCore.QDir.currentPath()))
         self.treeView.hideColumn(1)
+        self.treeView.hideColumn(2)
 
         self.selectionModel = self.treeView.selectionModel()
 
+        index = self.selectionModel.currentIndex()
+        directory = self.dirmodel.filePath(index)
+
+
         self.treeView.clicked[QtCore.QModelIndex].connect(self.viewDirectory) 
 
-        # File viewing
-        self.filemodel = QFileSystemModel()
-        self.filemodel.setFilter(QtCore.QDir.NoDotAndDotDot | QtCore.QDir.Files)
 
-
-
-        self.listView.setModel(self.filemodel)  
-
-        self.listView.clicked[QtCore.QModelIndex].connect(self.viewFile) 
-
-        self.splitter_2.splitterMoved.connect(self.updateImage);
+        self.splitter.splitterMoved.connect(self.updateImage);
 
         """
         self.stylesheet = "assets/hitagi.stylesheet"
@@ -51,19 +48,17 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
             self.setStyleSheet(fh.read())
         """
 
-        self.headerContainer.setText("Hitagi Reader " + __version__)
-
-        self.logoContainer.setPixmap(QPixmap("assets/logo.png"))
-
         self._resize_timer = None
         self.resizeCompleted.connect(self.handleResizeCompleted)
 
         # File
         self.actionSearch_online.triggered.connect(self.showSearchOnline)
+        self.actionCopy.triggered.connect(self.copyImage)
         self.actionOptions.triggered.connect(self.showOptions)
         self.actionExit.triggered.connect(self.close)
         # Folder
-        self.actionOpen_Directory.triggered.connect(self.changeDirectory)
+        self.actionOpen_current_directory.triggered.connect(self.openDirectory)
+        self.actionChange_directory.triggered.connect(self.changeDirectory)
         # Display
         self.actionFullscreen.triggered.connect(self.toggleFullscreen)
         # Help
@@ -71,6 +66,7 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         self.actionDialog_About.triggered.connect(self.aboutHitagi)
 
         # variables
+        self.clipboard = QApplication.clipboard()
         self.image_index = -1 # index of current shown image
         self.is_fullscreen = False # fullscreen mode
         self.image_paths = [] # list of images in the chosen directory
@@ -86,17 +82,29 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         self.is_maximized = self.isMaximized()
         self.window_dimensions = self.geometry()
 
-    def viewFile(self, index):
-        self.changeDirectory(self.dirmodel.filePath(index))
-
-    def viewDirectory(self, index):
+    def viewDirectory(self):
         index = self.selectionModel.currentIndex()
         directory = self.dirmodel.filePath(index)
-        self.filemodel.setRootPath(directory)
-        self.listView.setRootIndex(self.filemodel.index(directory))
+        self.changeDirectory(self.dirmodel.filePath(index))
+
+        self.treeView.setRootIndex(self.dirmodel.index(QtCore.QDir.currentPath()))
 
     def showSearchOnline(self):
         webbrowser.open("https://images.google.com/imghp", 2) 
+
+    def copyImage(self):
+        if self.image_index != -1:
+            self.clipboard.setImage(QImage(str(self.image_paths[self.image_index])), QClipboard.Clipboard)
+
+    def openDirectory(self):
+        path = self.settings['currentDir']
+        # open in explorer
+        if sys.platform == 'darwin':
+            subprocess.Popen('open ' + path)
+        elif sys.platform == 'linux2':
+            subprocess.Popen('gnome-open ' + path)
+        elif sys.platform == 'win32':
+            subprocess.Popen('explorer ' + path)
 
     def showOptions(self):
         Dialogs.Settings(self).show()
@@ -205,6 +213,10 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
         # if already in fullscreen mode
         if self.is_fullscreen: 
 
+            # show components in non-fullscreen mode
+            self.menubar.setVisible(True)
+            self.splitter.setVisible(True)
+
             # update image dimension
             self.updateImage()
             self.is_fullscreen = False
@@ -225,6 +237,10 @@ class MainWindow(QMainWindow, Ui_Mainwindow):
                 # save properties to restore later on
                 self.window_dimensions = self.geometry()
                 self.is_maximized = self.isMaximized()
+
+                # hide components in fullscreen mode
+                self.menubar.setVisible(False)
+                self.splitter.setVisible(False)
 
                 self.showFullScreen()
                 self.is_fullscreen = True
