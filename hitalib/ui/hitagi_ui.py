@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hitagi.ui'
 #
-# Created: Fri Oct  3 12:56:53 2014
+# Created: Sun Oct 12 15:45:21 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -62,21 +62,9 @@ class Ui_Mainwindow(object):
         self.headerContainer.setObjectName("headerContainer")
         self.horizontalLayout.addWidget(self.headerContainer)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.splitter_2 = QtGui.QSplitter(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.splitter_2.sizePolicy().hasHeightForWidth())
-        self.splitter_2.setSizePolicy(sizePolicy)
-        self.splitter_2.setOrientation(QtCore.Qt.Vertical)
-        self.splitter_2.setObjectName("splitter_2")
-        self.splitter = QtGui.QSplitter(self.splitter_2)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
-        self.splitter.setSizePolicy(sizePolicy)
+        self.splitter = QtGui.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setChildrenCollapsible(True)
         self.splitter.setObjectName("splitter")
         self.treeView = QtGui.QTreeView(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
@@ -86,18 +74,10 @@ class Ui_Mainwindow(object):
         self.treeView.setSizePolicy(sizePolicy)
         self.treeView.setFocusPolicy(QtCore.Qt.NoFocus)
         self.treeView.setObjectName("treeView")
-        self.listView = QtGui.QListView(self.splitter)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.listView.sizePolicy().hasHeightForWidth())
-        self.listView.setSizePolicy(sizePolicy)
-        self.listView.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.listView.setObjectName("listView")
-        self.imageContainer = QtGui.QLabel(self.splitter_2)
+        self.imageContainer = QtGui.QLabel(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(5)
+        sizePolicy.setHorizontalStretch(5)
+        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.imageContainer.sizePolicy().hasHeightForWidth())
         self.imageContainer.setSizePolicy(sizePolicy)
         self.imageContainer.setStyleSheet("")
@@ -107,7 +87,7 @@ class Ui_Mainwindow(object):
         self.imageContainer.setWordWrap(False)
         self.imageContainer.setMargin(0)
         self.imageContainer.setObjectName("imageContainer")
-        self.verticalLayout.addWidget(self.splitter_2)
+        self.verticalLayout.addWidget(self.splitter)
         Mainwindow.setCentralWidget(self.centralwidget)
         self.statusBar = QtGui.QStatusBar(Mainwindow)
         self.statusBar.setObjectName("statusBar")
