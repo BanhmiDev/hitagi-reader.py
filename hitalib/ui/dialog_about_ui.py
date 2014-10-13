@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'hitalib/ui/form.ui'
+# Form implementation generated from reading ui file 'about/about.ui'
 #
-# Created: Wed Sep 24 16:25:28 2014
+# Created: Mon Oct 13 19:52:53 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -10,30 +10,17 @@
 from PySide import QtCore, QtGui
 
 class Ui_About(object):
-    def setupUi(self, Settings):
-        Settings.setObjectName("Settings")
-        Settings.setWindowModality(QtCore.Qt.ApplicationModal)
-        Settings.resize(400, 300)
-        self.tabWidget = QtGui.QTabWidget(Settings)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 10, 381, 281))
-        self.tabWidget.setObjectName("tabWidget")
-        self.tab = QtGui.QWidget()
-        self.tab.setObjectName("tab")
-        self.tabWidget.addTab(self.tab, "")
-        self.tab_2 = QtGui.QWidget()
-        self.tab_2.setObjectName("tab_2")
-        self.tabWidget.addTab(self.tab_2, "")
-        self.tab_3 = QtGui.QWidget()
-        self.tab_3.setObjectName("tab_3")
-        self.tabWidget.addTab(self.tab_3, "")
+    def setupUi(self, About):
+        About.setObjectName("About")
+        About.resize(400, 300)
+        self.label = QtGui.QLabel(About)
+        self.label.setGeometry(QtCore.QRect(80, 20, 311, 221))
+        self.label.setObjectName("label")
 
-        self.retranslateUi(Settings)
-        self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(Settings)
+        self.retranslateUi(About)
+        QtCore.QMetaObject.connectSlotsByName(About)
 
-    def retranslateUi(self, Settings):
-        Settings.setWindowTitle(QtGui.QApplication.translate("Settings", "Settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("Settings", "Hotkeys", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("Settings", "Layout", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("Settings", "Language", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, About):
+        About.setWindowTitle(QtGui.QApplication.translate("About", "About", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("About", "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Hitagi Reader 1.0</span></p><p><a href=\"http://github.com/gimu/hitagi-reader\"><span style=\" text-decoration: underline; color:#0000ff;\">http://github.com/gimu/hitagi-reader</span></a></p><p>Hitagi Reader is licensed under the <a href=\"http://www.apache.org/licenses/LICENSE-2.0.html\"><span style=\" text-decoration: underline; color:#0000ff;\">Apache 2.0</span></a> License.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 

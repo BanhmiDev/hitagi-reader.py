@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hitagi.ui'
 #
-# Created: Sun Oct 12 16:58:09 2014
+# Created: Mon Oct 13 16:43:27 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,7 +19,7 @@ class Ui_Mainwindow(object):
         sizePolicy.setHeightForWidth(Mainwindow.sizePolicy().hasHeightForWidth())
         Mainwindow.setSizePolicy(sizePolicy)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("assets/icon/64x64.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Mainwindow.setWindowIcon(icon)
         Mainwindow.setAutoFillBackground(False)
         Mainwindow.setStyleSheet("")
