@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hitagi.ui'
 #
-# Created: Mon Oct 13 16:43:27 2014
+# Created: Sat Oct 18 18:16:56 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,13 +37,23 @@ class Ui_Mainwindow(object):
         self.centralwidget.setStyleSheet("")
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
         self.splitter = QtGui.QSplitter(self.centralwidget)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
-        self.splitter.setChildrenCollapsible(True)
         self.splitter.setObjectName("splitter")
-        self.treeView = QtGui.QTreeView(self.splitter)
+        self.frame = QtGui.QFrame(self.splitter)
+        self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtGui.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.gridLayout = QtGui.QGridLayout(self.frame)
+        self.gridLayout.setObjectName("gridLayout")
+        self.pushButton = QtGui.QPushButton(self.frame)
+        self.pushButton.setObjectName("pushButton")
+        self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
+        self.pushButton_2 = QtGui.QPushButton(self.frame)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.gridLayout.addWidget(self.pushButton_2, 0, 1, 1, 1)
+        self.treeView = QtGui.QTreeView(self.frame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -51,6 +61,7 @@ class Ui_Mainwindow(object):
         self.treeView.setSizePolicy(sizePolicy)
         self.treeView.setFocusPolicy(QtCore.Qt.NoFocus)
         self.treeView.setObjectName("treeView")
+        self.gridLayout.addWidget(self.treeView, 1, 0, 1, 2)
         self.imageContainer = QtGui.QLabel(self.splitter)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
         sizePolicy.setHorizontalStretch(5)
@@ -133,6 +144,8 @@ class Ui_Mainwindow(object):
 
     def retranslateUi(self, Mainwindow):
         Mainwindow.setWindowTitle(QtGui.QApplication.translate("Mainwindow", "Hitagi Reader", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton.setText(QtGui.QApplication.translate("Mainwindow", "Set as Favorite", None, QtGui.QApplication.UnicodeUTF8))
+        self.pushButton_2.setText(QtGui.QApplication.translate("Mainwindow", "Open Parent", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("Mainwindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuOption.setTitle(QtGui.QApplication.translate("Mainwindow", "Folder", None, QtGui.QApplication.UnicodeUTF8))
         self.menuAbout.setTitle(QtGui.QApplication.translate("Mainwindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
