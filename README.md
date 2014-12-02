@@ -17,4 +17,4 @@ Download the latest [Hitagi Reader release](https://github.com/gimu/hitagi-reade
 Either change settings inside the application itself or manually configure ``settings.json``.
 
 ## License
-Hitagi Reader is licensed under the [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) License.
+Hitagi Reader is licensed under the [MIT](http://opensource.org/licenses/MIT) License.
