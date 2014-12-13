@@ -1,5 +1,6 @@
 Hitagi Reader
 =============
+[![Supported platforms][badge-platforms]][Releases] [![Latest release][badge-release]][Releases] [![Open issues][badge-issues]][Issues]
 A simple and lightweight image viewer which supports various file formats. Aimed to show collections of images in an easy and efficient way.
 
 ## Features
