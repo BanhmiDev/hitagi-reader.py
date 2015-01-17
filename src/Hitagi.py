@@ -5,14 +5,15 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QSplashScreen)
 
 from model.Model import Model
 from controller.MainController import MainController
-from view.Main import Main
+from view.MainView import MainView
 
 class Hitagi(QMainWindow):
     def __init__(self):
         super(Hitagi, self).__init__()
-
-        self.controller = MainController()
-        self.controller.view.show()
+        self.model = Model()
+        self.main_controller = MainController(self.model)
+        self.main_view = MainView(self.model, self.main_controller)
+        self.main_view.show()
 
 if __name__ == "__main__":
     import sys
