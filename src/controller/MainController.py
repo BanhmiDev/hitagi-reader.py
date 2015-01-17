@@ -1,33 +1,38 @@
 #!/usr/bin/env python
 from PyQt5 import uic
 from PyQt5.QtCore import (pyqtSlot, QDir)
-from PyQt5.QtGui import (QFont, QIcon)
+from PyQt5.QtGui import (QFont, QIcon, QImage)
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QFileSystemModel)
 
-from model.Model import Model
-from view.Main import Main
+from model import Canvas
 
 class MainController(object):
 
-    def __init__(self):
-        self.model = Model()
-        self.view = Main()
+    def __init__(self, model):
+        self.model = model
+        self.canvas = Canvas.Canvas(model)
 
-        # File
-        self.view.actionSearch_online.triggered.connect(self.view.close)
-        self.view.actionSet_as_wallpaper.triggered.connect(self.view.close)
-        self.view.actionCopy_to_clipboard.triggered.connect(self.view.close)
-        self.view.actionOpen_current_directory.triggered.connect(self.view.close)
-        self.view.actionOptions.triggered.connect(self.view.options)
-        self.view.actionExit.triggered.connect(self.view.close)
+    # called from view class
+    def change_include_subfolders(self, checked):
+        # put control logic here
+        self.model.include_subfolders = checked
+        self.model.announce_update()
 
-        # Folder
-        self.view.actionChange_directory.triggered.connect(self.model.changeDirectory)
-        self.view.actionInclude_subfolders.triggered.connect(self.view.close)
+    def change_directory(self, container_width, container_height):
+        self.model.change_directory()
+        self.canvas.update_canvas(container_width, container_height)
+        self.model.announce_update()
 
-        # Display
-        self.view.actionFullscreen.triggered.connect(self.model.toggleFullscreen)
+    def update_canvas(self, container_width, container_height):
+        self.canvas.update_canvas(container_width, container_height)
+        self.model.announce_update()
 
-        # Help
-        self.view.actionChangelog.triggered.connect(self.model.toggleFullscreen)
-        self.view.actionAbout.triggered.connect(self.model.toggleFullscreen)
+    def toggle_fullscreen(self):
+        self.canvas.toggle_fullscreen()
+        self.model.announce_update()
+
+    def prevImage(self):
+        self.model.prevImage()
+
+    def nextImage(self):
+        self.model.nextImage()
