@@ -31,8 +31,12 @@ class MainController(object):
         self.canvas.toggle_fullscreen()
         self.model.announce_update()
 
-    def prevImage(self):
-        self.model.prevImage()
+    def prev_image(self, container_width, container_height):
+        self.model.prev_image()
+        self.canvas.update_canvas(container_width, container_height)
+        self.model.announce_update()
 
-    def nextImage(self):
-        self.model.nextImage()
+    def next_image(self, container_width, container_height):
+        self.model.next_image()
+        self.canvas.update_canvas(container_width, container_height)
+        self.model.announce_update()
