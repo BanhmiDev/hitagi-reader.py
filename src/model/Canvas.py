@@ -1,31 +1,56 @@
 #!/usr/bin/env python
-from pathlib import Path
 
-from PyQt5.QtCore import (pyqtSlot, QDir, Qt)
-from PyQt5.QtGui import (QFont, QIcon, QImage)
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
 
-from model import Model
+class CanvasModel(object):
 
-class Canvas(object):
+    def __init__(self):
+        self.scene = QGraphicsScene()
+        self.scale_factor = 1
 
-    def __init__(self, main_model):
-        self.model = main_model
-
-    # Update on resize etc.
-    def update_canvas(self, container_width, container_height):
-        image = self.model.get_image()
+    # Update on main canvas
+    def update_canvas(self, container_width, container_height, image = None, scale = 0, factor = 1):
 
         if image != None:
-            #self.setWindowTitle("Hitagi - " + str(self.image_paths[self.image_index]) + "    " + str(self.image_index + 1) + " of " + str(len(self.image_paths)))
-            container_size = (container_width, container_height)
-            image_size = (image.width(), image.height())
-            ratio = [image_size[0] / container_size[0], image_size[1] / container_size[1]]
-            if ratio[0] > 1 and ratio[0] > ratio[1]:
-                image = image.scaledToWidth(container_size[0], Qt.SmoothTransformation)
-            elif ratio[1] > 1 and ratio[1] > ratio[0]:
-                image = image.scaledToHeight(container_size[1], Qt.SmoothTransformation)
+            # Scaling options
+            # 0: Default mode (ratio scaling)
+            # 1: Scale with factor (zoom)
+            # 2: Scale to container width
+            # 3: Scale to container height
+            if scale == 0:
+                container_size = (container_width, container_height)
+                image_size = (image.width(), image.height())
+                ratio = [image_size[0] / container_size[0], image_size[1] / container_size[1]]
+                if ratio[0] > 1 and ratio[0] > ratio[1]:
+                    image = image.scaledToWidth(container_size[0], Qt.SmoothTransformation)
+                elif ratio[1] > 1 and ratio[1] > ratio[0]:
+                    image = image.scaledToHeight(container_size[1], Qt.SmoothTransformation)
+            elif scale == 1:
+                self.scale_factor *= factor
+                image = image.scaledToWidth(image.width() * self.scaleFactor, Qt.SmoothTransformation)
+            elif scale == 2:
+                image = image.scaledToWidth(container_width, Qt.SmoothTransformation)
+            elif scale == 3:
+                image = image.scaledToHeight(container_height, Qt.SmoothTransformation)
 
-            self.model.image = image
+            # Clear old scene
+            self.scene.clear()
+
+            # Centering and dragging 'fix'
+            if image.width() < container_width:
+                delta_x = container_width - image.width()
+            else:
+                delta_x = 0
+
+            full_container_width = image.width() + delta_x * 2
+            self.scene.setSceneRect(-delta_x, 0, full_container_width, image.height())
+
+            # Adding it
+            self.pixmap_item = QGraphicsPixmapItem(QPixmap.fromImage(image))
+            self.scene.addItem(self.pixmap_item)
+            self.scene.update()
 
     # Toggle fullscreen mode
     def toggle_fullscreen(self):
