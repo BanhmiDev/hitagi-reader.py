@@ -6,9 +6,14 @@ from PyQt5.QtCore import (pyqtSlot, QDir, Qt)
 from PyQt5.QtGui import (QFont, QIcon, QImage)
 from PyQt5.QtWidgets import (QApplication, QFileSystemModel, QFileDialog)
 
-class Model(object):
+from model.canvas import CanvasModel
+
+# MAIN MODEL
+class AppModel(object):
 
     def __init__(self):
+        self.canvas = CanvasModel()
+
         self.is_fullscreen = False # fullscreen mode
         self.image_paths = [] # images of the current directory
 
@@ -19,6 +24,8 @@ class Model(object):
         self.image_index = -1 # index of current shown image
         self.directory = None
         self.image = None
+
+        self.scaleFactor = 1
 
     # subscribe a view method for updating
     def subscribe_update_func(self, func):
@@ -44,6 +51,7 @@ class Model(object):
         return image
 
     def change_directory(self, directory = None):
+        print(directory)
         if not directory:
             new_directory = QFileDialog.getExistingDirectory(None, "HALLO", '/')
         else:
@@ -71,5 +79,12 @@ class Model(object):
             self.image_index -= 1
 
     def next_image(self):
-        if self.image_index < len(self.image_paths):
+        if self.image_index < (len(self.image_paths) - 1):
             self.image_index += 1
+
+    def toggle_fullscreen(self):
+        # Already in fullscreen mode
+        if self.is_fullscreen:
+            self.is_fullscreen = False
+        else:
+            self.is_fullscreen = True

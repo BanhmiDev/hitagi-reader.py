@@ -3,14 +3,14 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QSplashScreen)
 
-from model.Model import Model
-from controller.MainController import MainController
+from model.app import AppModel
+from controller.main import MainController
 from view.MainView import MainView
 
 class Hitagi(QMainWindow):
     def __init__(self):
         super(Hitagi, self).__init__()
-        self.model = Model()
+        self.model = AppModel()
         self.main_controller = MainController(self.model)
         self.main_view = MainView(self.model, self.main_controller)
         self.main_view.show()

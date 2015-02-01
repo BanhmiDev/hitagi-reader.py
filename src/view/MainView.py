@@ -1,9 +1,20 @@
-from PyQt5 import uic, QtCore
-from PyQt5.QtCore import QDir
+#!/usr/bin/env python
+# PyQt5
+from PyQt5 import uic, QtCore, QtGui
+from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import (QMainWindow, QFileSystemModel)
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene
 
-from resources.hitagi import Ui_MainWindow
+# Hitagi Reader
+from resources.hitagi import Ui_Hitagi
+
+from model.settings import SettingsModel
+
+from controller.canvas import CanvasController
+from controller.main import MainController
+
+# Misc
+import webbrowser
 
 class MainView(QMainWindow):
 
@@ -14,68 +25,104 @@ class MainView(QMainWindow):
     def include_subfolders(self, value):
         self.ui.actionInclude_subfolders.setChecked(value)
 
-    def __init__(self, model, main_controller):
+    def __init__(self, model, controller):
+        self.settings = SettingsModel()
         self.model = model
-        self.main_controller = main_controller
+        self.canvas = self.model.canvas
+        self.main_controller = controller
+        self.canvas_controller = CanvasController(self.canvas)
         super(MainView, self).__init__()
         self.build_ui()
 
         self.model.subscribe_update_func(self.update_ui_from_model)
 
     def build_ui(self):
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_Hitagi()
         self.ui.setupUi(self)
 
-        # Actions
+        # File
         self.ui.actionSearch_online.triggered.connect(self.on_close)
         self.ui.actionSet_as_wallpaper.triggered.connect(self.on_wallpaper)
         self.ui.actionCopy_to_clipboard.triggered.connect(self.on_clipboard)
         self.ui.actionOpen_current_directory.triggered.connect(self.on_close)
         self.ui.actionOptions.triggered.connect(self.on_options)
         self.ui.actionExit.triggered.connect(self.on_close)
-        self.ui.actionChange_directory.triggered.connect(self.on_change_directory)
+        # Folder
+        self.ui.actionChange_directory.triggered.connect(self.on_change_directory) 
         self.ui.actionInclude_subfolders.triggered.connect(self.on_include_subfolders)
+
+        # View
+        self.ui.actionZoom_in.triggered.connect(self.on_zoom_in)
+        self.ui.actionZoom_out.triggered.connect(self.on_zoom_out)
+        self.ui.actionOriginal_size.triggered.connect(self.on_zoom_original)
+        self.ui.actionFit_image_width.triggered.connect(self.on_scale_image_to_width)
+        self.ui.actionFit_image_height.triggered.connect(self.on_scale_image_to_height)
         self.ui.actionFullscreen.triggered.connect(self.on_fullscreen)
+
+        # Help
         self.ui.actionChangelog.triggered.connect(self.on_changelog)
         self.ui.actionAbout.triggered.connect(self.on_about)
 
-        sshFile="resources/hitagi.stylesheet"
-        with open(sshFile,"r") as fh:
-            self.setStyleSheet(fh.read())
+        # Load stylesheet
+        stylesheet_dir = "resources/hitagi.stylesheet"
+        with open(stylesheet_dir, "r") as sh:
+            self.setStyleSheet(sh.read())
 
+        # File view
         self.file_model = QFileSystemModel()
-        self.file_model.setRootPath(QDir.rootPath())
-
-        self.ui.splitter.setSizes([80, 100])
+        self.file_model.setRootPath(self.settings.get('Directory', 'default'))
 
         self.ui.treeView.setModel(self.file_model)
-        self.ui.treeView.setRootIndex(self.file_model.index(QDir.rootPath()))
+        self.ui.treeView.setRootIndex(self.file_model.index(self.settings.get('Directory', 'default')))
         self.ui.treeView.setColumnWidth(0, 200) 
         self.ui.treeView.setColumnWidth(1, 200)
         self.ui.treeView.hideColumn(1)
         self.ui.treeView.hideColumn(2)
 
-    # on resize
-    def resizeEvent(self, resizeEvent):
-        self.main_controller.update_canvas(self.ui.label.width(), self.ui.label.height())
+        # Shortcuts
+        _translate = QtCore.QCoreApplication.translate
+        self.ui.actionExit.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'exit')))
 
-    # key shortcuts
+        self.ui.actionChange_directory.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'directory')))
+
+        self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomin')))
+        self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomout')))
+        self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomoriginal')))
+        self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'fullscreen')))
+
+    # On resize
+    def resizeEvent(self, resizeEvent):
+        self.main_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image())
+
+    # Additional static shortcuts
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Left:
-            self.main_controller.prev_image(self.ui.label.width(), self.ui.label.height())
-        elif e.key() == QtCore.Qt.Key_Right:
-            self.main_controller.next_image(self.ui.label.width(), self.ui.label.height())
-        elif e.key() == QtCore.Qt.Key_D:
-            self.main_controller.change_directory(self.ui.label.width(), self.ui.label.height())
-        elif e.key() == QtCore.Qt.Key_F:
-            self.main_controller.toggle_fullscreen()
+        if e.key() == QtGui.QKeySequence(self.settings.get('Hotkeys', 'previmage')):
+            self.main_controller.prev_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        elif e.key() == QtGui.QKeySequence(self.settings.get('Hotkeys', 'nextimage')):
+            self.main_controller.next_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
         elif e.key() == QtCore.Qt.Key_Escape and self.is_fullscreen:
             self.main_controller.toggle_fullscreen()
 
     def on_clipboard(self):
-        print("2")
+        #todo
+
     def on_wallpaper(self):
-        print("2")
+        #todo
+
+    def on_zoom_in(self):
+        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1, 1.1)
+
+    def on_zoom_out(self):
+        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1, 0.9)
+
+    def on_zoom_original(self):
+        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 4)
+
+    def on_scale_image_to_width(self):
+        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 2)
+
+    def on_scale_image_to_height(self):
+        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
 
     def on_include_subfolders(self):
         self.main_controller.change_include_subfolders(self.include_subfolders)
@@ -87,7 +134,7 @@ class MainView(QMainWindow):
         self.close()
 
     def on_change_directory(self):
-        self.main_controller.change_directory(self.ui.label.width(), self.ui.label.height())
+        self.main_controller.change_directory(self.ui.graphicsView.width(), self.ui.graphicsView.height())
 
     def on_options(self):
         from view.OptionsView import OptionDialog
@@ -95,24 +142,20 @@ class MainView(QMainWindow):
         self.dialog.show()
 
     def on_changelog(self):
-        from view.ChangelogView import ChangelogDialog
-        dialog = ChangelogDialog(self, None, None)
-        dialog.show()
+        webbrowser.open('https://gimu.org/hitagi-reader/docs')
 
     def on_about(self):
         from view.AboutView import AboutDialog
         dialog = AboutDialog(self, None, None)
         dialog.show()
 
-
     def update_ui_from_model(self):
         if self.model.image_index != -1:
             self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
-            #self.ui.statusbar.showMessage(str(self.image_paths[self.image_index]) + "    " + str(self.image_index + 1) + " of " + str(len(self.image_paths)))
-            self.ui.label.setPixmap(QPixmap.fromImage(self.model.image))
+            self.ui.statusbar.showMessage(str(self.model.image_paths[self.model.image_index]) + "    " + str(self.model.image_index + 1) + " of " + str(len(self.model.image_paths)))
+            self.ui.graphicsView.setScene(self.canvas.scene)
 
         if self.model.is_fullscreen:
-
             self.showFullScreen()
         else:
             self.showNormal()

@@ -4,13 +4,14 @@ from PyQt5.QtCore import (pyqtSlot, QDir)
 from PyQt5.QtGui import (QFont, QIcon, QImage)
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QFileSystemModel)
 
-from model import Canvas
+from model.app import AppModel
+from model.canvas import CanvasModel
 
-class MainController(object):
+class CanvasController(object):
 
-    def __init__(self, model):
-        self.model = model
-        self.canvas = Canvas.Canvas(model)
+    def __init__(self, canvas):
+        self.model = AppModel()
+        self.canvas = canvas
 
     # called from view class
     def change_include_subfolders(self, checked):
@@ -18,17 +19,14 @@ class MainController(object):
         self.model.include_subfolders = checked
         self.model.announce_update()
 
-    def change_directory(self, container_width, container_height):
-        self.model.change_directory()
-        self.canvas.update_canvas(container_width, container_height)
+    def change_directory(self, container_width, container_height, directory = None):
+        self.model.change_directory(directory)
+        image= self.model.get_image()
+        self.canvas.update_canvas(container_width, container_height, image)
         self.model.announce_update()
 
-    def update_canvas(self, container_width, container_height):
-        self.canvas.update_canvas(container_width, container_height)
-        self.model.announce_update()
-
-    def toggle_fullscreen(self):
-        self.canvas.toggle_fullscreen()
+    def update_canvas(self, container_width, container_height, image = None, scale = 0, factor = 1):
+        self.canvas.update_canvas(container_width, container_height, image, scale, factor)
         self.model.announce_update()
 
     def prev_image(self, container_width, container_height):
