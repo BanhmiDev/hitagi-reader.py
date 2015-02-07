@@ -44,4 +44,7 @@ class MainController(object):
         image = self.model.get_image()
         self.canvas.update_canvas(container_width, container_height, image)
         self.model.announce_update()
+
+    def set_wallpaper(self):
+        self.model.set_wallpaper()
         

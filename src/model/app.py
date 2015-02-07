@@ -4,11 +4,10 @@ from pathlib import Path
 from PyQt5 import uic
 from PyQt5.QtCore import (pyqtSlot, QDir, Qt)
 from PyQt5.QtGui import (QFont, QIcon, QImage)
-from PyQt5.QtWidgets import (QApplication, QFileSystemModel, QFileDialog)
+from PyQt5.QtWidgets import (QApplication, QFileSystemModel, QFileDialog, QMessageBox)
 
 from model.canvas import CanvasModel
 
-# MAIN MODEL
 class AppModel(object):
 
     def __init__(self):
@@ -43,15 +42,12 @@ class AppModel(object):
             func()
 
     def get_image(self):
-        if self.image_index != -1:
-            image = QImage(str(self.image_paths[self.image_index]))
-        else:
-            image = None
+        return QImage(str(self.image_paths[self.image_index])) if self.image_index != -1 else None
 
-        return image
+    def get_image_path(self):
+        return str(self.image_paths[self.image_index]) if self.image_index > -1 else None
 
     def change_directory(self, directory = None):
-        print(directory)
         if not directory:
             new_directory = QFileDialog.getExistingDirectory(None, "HALLO", '/')
         else:
@@ -88,3 +84,15 @@ class AppModel(object):
             self.is_fullscreen = False
         else:
             self.is_fullscreen = True
+
+    def set_wallpaper(self):
+        import win32api, win32con, win32gui
+
+        if self.get_image_path() is not None:
+            path = self.get_image_path()
+
+            key = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER,"Control Panel\\Desktop",0,win32con.KEY_SET_VALUE)
+            win32api.RegSetValueEx(key, "WallpaperStyle", 0, win32con.REG_SZ, "0")
+            win32api.RegSetValueEx(key, "TileWallpaper", 0, win32con.REG_SZ, "0")
+            win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path, win32con.SPIF_UPDATEINIFILE |
+                            win32con.SPIF_SENDCHANGE)

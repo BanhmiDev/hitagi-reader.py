@@ -40,6 +40,8 @@ class MainView(QMainWindow):
         self.ui = Ui_Hitagi()
         self.ui.setupUi(self)
 
+        self.ui.pushButton_change.clicked.connect(self.on_change_directory)
+
         # File
         self.ui.actionSearch_online.triggered.connect(self.on_close)
         self.ui.actionSet_as_wallpaper.triggered.connect(self.on_wallpaper)
@@ -57,6 +59,7 @@ class MainView(QMainWindow):
         self.ui.actionOriginal_size.triggered.connect(self.on_zoom_original)
         self.ui.actionFit_image_width.triggered.connect(self.on_scale_image_to_width)
         self.ui.actionFit_image_height.triggered.connect(self.on_scale_image_to_height)
+        self.ui.actionFile_list.triggered.connect(self.on_toggle_filelist)
         self.ui.actionFullscreen.triggered.connect(self.on_fullscreen)
 
         # Help
@@ -104,10 +107,10 @@ class MainView(QMainWindow):
             self.main_controller.toggle_fullscreen()
 
     def on_clipboard(self):
-        #todo
+        print("")
 
     def on_wallpaper(self):
-        #todo
+        self.main_controller.set_wallpaper()
 
     def on_zoom_in(self):
         self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1, 1.1)
@@ -123,6 +126,12 @@ class MainView(QMainWindow):
 
     def on_scale_image_to_height(self):
         self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
+
+    def on_toggle_filelist(self):
+        if self.ui.actionFile_list.isChecked():
+            self.ui.fileWidget.show()
+        else:
+            self.ui.fileWidget.hide()
 
     def on_include_subfolders(self):
         self.main_controller.change_include_subfolders(self.include_subfolders)
