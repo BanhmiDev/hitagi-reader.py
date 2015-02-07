@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PyQt5 import uic
 from PyQt5.QtCore import (pyqtSlot, QDir, Qt)
-from PyQt5.QtGui import (QFont, QIcon, QImage)
+from PyQt5.QtGui import (QFont, QIcon, QImage, QClipboard)
 from PyQt5.QtWidgets import (QApplication, QFileSystemModel, QFileDialog, QMessageBox)
 
 from model.canvas import CanvasModel
@@ -12,6 +12,8 @@ class AppModel(object):
 
     def __init__(self):
         self.canvas = CanvasModel()
+
+        self.clipboard = QApplication.clipboard()
 
         self.is_fullscreen = False # fullscreen mode
         self.image_paths = [] # images of the current directory
@@ -85,6 +87,10 @@ class AppModel(object):
         else:
             self.is_fullscreen = True
 
+    def copy_to_clipboard(self):
+        if self.image_index != -1:
+            self.clipboard.setImage(self.get_image(), QClipboard.Clipboard)
+
     def set_wallpaper(self):
         import win32api, win32con, win32gui
 
@@ -94,5 +100,4 @@ class AppModel(object):
             key = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER,"Control Panel\\Desktop",0,win32con.KEY_SET_VALUE)
             win32api.RegSetValueEx(key, "WallpaperStyle", 0, win32con.REG_SZ, "0")
             win32api.RegSetValueEx(key, "TileWallpaper", 0, win32con.REG_SZ, "0")
-            win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path, win32con.SPIF_UPDATEINIFILE |
-                            win32con.SPIF_SENDCHANGE)
+            win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path, win32con.SPIF_UPDATEINIFILE | win32con.SPIF_SENDCHANGE)

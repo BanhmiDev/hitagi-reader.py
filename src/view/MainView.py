@@ -42,18 +42,20 @@ class MainView(QMainWindow):
 
         self.ui.pushButton_change.clicked.connect(self.on_change_directory)
 
-        # File
-        self.ui.actionSearch_online.triggered.connect(self.on_close)
+        # File menu
         self.ui.actionSet_as_wallpaper.triggered.connect(self.on_wallpaper)
         self.ui.actionCopy_to_clipboard.triggered.connect(self.on_clipboard)
-        self.ui.actionOpen_current_directory.triggered.connect(self.on_close)
+        self.ui.actionOpen_current_directory.triggered.connect(self.on_current_dir)
         self.ui.actionOptions.triggered.connect(self.on_options)
         self.ui.actionExit.triggered.connect(self.on_close)
-        # Folder
-        self.ui.actionChange_directory.triggered.connect(self.on_change_directory) 
+
+        # Folder menu
+        self.ui.actionOpen_next.triggered.connect(self.on_previous_image)
+        self.ui.actionOpen_previous.triggered.connect(self.on_next_image)
+        self.ui.actionChange_directory.triggered.connect(self.on_change_directory)
         self.ui.actionInclude_subfolders.triggered.connect(self.on_include_subfolders)
 
-        # View
+        # View menu
         self.ui.actionZoom_in.triggered.connect(self.on_zoom_in)
         self.ui.actionZoom_out.triggered.connect(self.on_zoom_out)
         self.ui.actionOriginal_size.triggered.connect(self.on_zoom_original)
@@ -62,7 +64,7 @@ class MainView(QMainWindow):
         self.ui.actionFile_list.triggered.connect(self.on_toggle_filelist)
         self.ui.actionFullscreen.triggered.connect(self.on_fullscreen)
 
-        # Help
+        # Help menu
         self.ui.actionChangelog.triggered.connect(self.on_changelog)
         self.ui.actionAbout.triggered.connect(self.on_about)
 
@@ -86,6 +88,8 @@ class MainView(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         self.ui.actionExit.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'exit')))
 
+        self.ui.actionOpen_next.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'next')))
+        self.ui.actionOpen_previous.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'previous')))
         self.ui.actionChange_directory.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'directory')))
 
         self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomin')))
@@ -99,19 +103,41 @@ class MainView(QMainWindow):
 
     # Additional static shortcuts
     def keyPressEvent(self, e):
-        if e.key() == QtGui.QKeySequence(self.settings.get('Hotkeys', 'previmage')):
-            self.main_controller.prev_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
-        elif e.key() == QtGui.QKeySequence(self.settings.get('Hotkeys', 'nextimage')):
-            self.main_controller.next_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
-        elif e.key() == QtCore.Qt.Key_Escape and self.is_fullscreen:
+        if e.key() == QtCore.Qt.Key_Escape and self.is_fullscreen:
             self.main_controller.toggle_fullscreen()
 
-    def on_clipboard(self):
-        print("")
-
+    # File menu
     def on_wallpaper(self):
         self.main_controller.set_wallpaper()
 
+    def on_clipboard(self):
+        self.main_controller.copy_to_clipboard()
+
+    def on_current_dir(self):
+        print("todo")
+
+    def on_options(self):
+        from view.OptionsView import OptionDialog
+        self.dialog = OptionDialog(self, None, None)
+        self.dialog.show()
+
+    def on_close(self):
+        self.close()
+
+    # Folder menu
+    def on_next_image(self):
+        self.main_controller.prev_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+
+    def on_previous_image(self):
+        self.main_controller.next_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+
+    def on_change_directory(self):
+        self.main_controller.change_directory(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+
+    def on_include_subfolders(self):
+        self.main_controller.change_include_subfolders(self.include_subfolders)
+
+    # View menu
     def on_zoom_in(self):
         self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1, 1.1)
 
@@ -133,23 +159,10 @@ class MainView(QMainWindow):
         else:
             self.ui.fileWidget.hide()
 
-    def on_include_subfolders(self):
-        self.main_controller.change_include_subfolders(self.include_subfolders)
-
     def on_fullscreen(self):
         self.main_controller.toggle_fullscreen()
 
-    def on_close(self):
-        self.close()
-
-    def on_change_directory(self):
-        self.main_controller.change_directory(self.ui.graphicsView.width(), self.ui.graphicsView.height())
-
-    def on_options(self):
-        from view.OptionsView import OptionDialog
-        self.dialog = OptionDialog(self, None, None)
-        self.dialog.show()
-
+    # Help menu
     def on_changelog(self):
         webbrowser.open('https://gimu.org/hitagi-reader/docs')
 
@@ -158,6 +171,7 @@ class MainView(QMainWindow):
         dialog = AboutDialog(self, None, None)
         dialog.show()
 
+    # Update UI from model
     def update_ui_from_model(self):
         if self.model.image_index != -1:
             self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))

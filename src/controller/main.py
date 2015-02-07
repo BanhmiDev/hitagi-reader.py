@@ -47,4 +47,7 @@ class MainController(object):
 
     def set_wallpaper(self):
         self.model.set_wallpaper()
+
+    def copy_to_clipboard(self):
+        self.model.copy_to_clipboard()
         
