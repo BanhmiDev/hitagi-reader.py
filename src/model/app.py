@@ -61,11 +61,12 @@ class AppModel(object):
 
         # subfolder management
         if self.include_subfolders == True:
-            self.image_paths = [i for i in Path(new_directory).rglob("*") if i.suffix.lower() in ['.jpg', '.png']]
+            _image_paths = [i for i in Path(new_directory).rglob("*") if i.suffix.lower() in ['.jpg', '.png']]
         else:
-            self.image_paths = [i for i in Path(new_directory).glob("*") if i.suffix.lower() in ['.jpg', '.png']]
+            _image_paths = [i for i in Path(new_directory).glob("*") if i.suffix.lower() in ['.jpg', '.png']]
 
-        if len(self.image_paths) > 0:
+        if len(_image_paths) > 0:
+            self.image_paths = _image_paths
             self.image_index = 0
             self.directory = new_directory
             self.image = self.get_image()
