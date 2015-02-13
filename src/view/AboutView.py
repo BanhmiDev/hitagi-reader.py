@@ -14,3 +14,5 @@ class AboutDialog(QDialog):
     def build_ui(self):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+
+        self.ui.pushButton_close.clicked.connect(self.close)
