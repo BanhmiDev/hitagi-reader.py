@@ -87,16 +87,16 @@ class MainView(QMainWindow):
 
         # Shortcuts
         _translate = QtCore.QCoreApplication.translate
-        self.ui.actionExit.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'exit')))
+        self.ui.actionExit.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Exit')))
 
-        self.ui.actionOpen_next.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'next')))
-        self.ui.actionOpen_previous.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'previous')))
-        self.ui.actionChange_directory.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'directory')))
+        self.ui.actionOpen_next.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Next')))
+        self.ui.actionOpen_previous.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Previous')))
+        self.ui.actionChange_directory.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Directory')))
 
-        self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomin')))
-        self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomout')))
-        self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomoriginal')))
-        self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'fullscreen')))
+        self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom in')))
+        self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom out')))
+        self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom original')))
+        self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fullscreen')))
         
     def center_ui(self):
         ui_geometry = self.frameGeometry()
@@ -115,21 +115,21 @@ class MainView(QMainWindow):
 
         # Redefine shortcuts when hiding menubar
         if self.model.is_fullscreen and self.model.hide_menubar:
-            if e.key() == QKeySequence(self.settings.get('Hotkeys', 'exit')):
+            if e.key() == QKeySequence(self.settings.get('Hotkeys', 'Exit')):
                 self.on_close()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'next')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Next')):
                 self.on_next_image()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'previous')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Previous')):
                 self.on_previous_image()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'directory')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Directory')):
                 self.on_change_directory()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'zoomin')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom in')):
                 self.on_zoom_in()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'zoomout')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom out')):
                 self.on_zoom_out()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'zoomoriginal')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom original')):
                 self.on_zoom_original()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'fullscreen')):
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Fullscreen')):
                 self.main_controller.toggle_fullscreen()
 
     # File menu
