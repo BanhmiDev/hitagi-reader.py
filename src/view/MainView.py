@@ -2,8 +2,8 @@
 # PyQt5
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap, QImage
-from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene
+from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut
 
 # Hitagi Reader
 from resources.hitagi import Ui_Hitagi
@@ -33,6 +33,7 @@ class MainView(QMainWindow):
         self.canvas_controller = CanvasController(self.canvas)
         super(MainView, self).__init__()
         self.build_ui()
+        self.center_ui()
 
         self.model.subscribe_update_func(self.update_ui_from_model)
 
@@ -40,7 +41,7 @@ class MainView(QMainWindow):
         self.ui = Ui_Hitagi()
         self.ui.setupUi(self)
 
-        self.ui.pushButton_change.clicked.connect(self.on_change_directory)
+        #self.ui.pushButton_change.clicked.connect(self.on_change_directory)
 
         # File menu
         self.ui.actionSet_as_wallpaper.triggered.connect(self.on_wallpaper)
@@ -50,8 +51,8 @@ class MainView(QMainWindow):
         self.ui.actionExit.triggered.connect(self.on_close)
 
         # Folder menu
-        self.ui.actionOpen_next.triggered.connect(self.on_previous_image)
-        self.ui.actionOpen_previous.triggered.connect(self.on_next_image)
+        self.ui.actionOpen_next.triggered.connect(self.on_next_image)
+        self.ui.actionOpen_previous.triggered.connect(self.on_previous_image)
         self.ui.actionChange_directory.triggered.connect(self.on_change_directory)
         self.ui.actionInclude_subfolders.triggered.connect(self.on_include_subfolders)
 
@@ -96,6 +97,12 @@ class MainView(QMainWindow):
         self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomout')))
         self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'zoomoriginal')))
         self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'fullscreen')))
+        
+    def center_ui(self):
+        ui_geometry = self.frameGeometry()
+        center_point = QDesktopWidget().availableGeometry().center()
+        ui_geometry.moveCenter(center_point)
+        self.move(ui_geometry.topLeft())
 
     # On resize
     def resizeEvent(self, resizeEvent):
@@ -103,18 +110,42 @@ class MainView(QMainWindow):
 
     # Additional static shortcuts
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Escape and self.is_fullscreen:
+        if e.key() == QtCore.Qt.Key_Escape and self.model.is_fullscreen:
             self.main_controller.toggle_fullscreen()
+
+        # Redefine shortcuts when hiding menubar
+        if self.model.is_fullscreen and self.model.hide_menubar:
+            if e.key() == QKeySequence(self.settings.get('Hotkeys', 'exit')):
+                self.on_close()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'next')):
+                self.on_next_image()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'previous')):
+                self.on_previous_image()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'directory')):
+                self.on_change_directory()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'zoomin')):
+                self.on_zoom_in()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'zoomout')):
+                self.on_zoom_out()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'zoomoriginal')):
+                self.on_zoom_original()
+            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'fullscreen')):
+                self.main_controller.toggle_fullscreen()
 
     # File menu
     def on_wallpaper(self):
-        self.main_controller.set_wallpaper()
+        from view.WallpaperView import WallpaperDialog
+        dialog = WallpaperDialog(self, None, None)
+        dialog.show()
+        #self.main_controller.set_wallpaper()
 
     def on_clipboard(self):
         self.main_controller.copy_to_clipboard()
 
     def on_current_dir(self):
-        print("todo")
+        import subprocess
+        # Windows
+        subprocess.Popen(r'explorer /select,' + self.model.get_image_path())
 
     def on_options(self):
         from view.OptionsView import OptionDialog
@@ -126,10 +157,10 @@ class MainView(QMainWindow):
 
     # Folder menu
     def on_next_image(self):
-        self.main_controller.prev_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        self.main_controller.next_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
 
     def on_previous_image(self):
-        self.main_controller.next_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        self.main_controller.prev_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
 
     def on_change_directory(self):
         self.main_controller.change_directory(self.ui.graphicsView.width(), self.ui.graphicsView.height())
@@ -180,7 +211,15 @@ class MainView(QMainWindow):
 
         if self.model.is_fullscreen:
             self.showFullScreen()
+            if self.model.hide_menubar:
+                self.ui.menubar.hide()
+            if self.model.hide_statusbar:
+                self.ui.statusbar.hide()
         else:
             self.showNormal()
+            if self.model.hide_menubar:
+                self.ui.menubar.show()
+            if self.model.hide_statusbar:
+                self.ui.statusbar.show()
 
         self.include_subfolders = self.model.include_subfolders
