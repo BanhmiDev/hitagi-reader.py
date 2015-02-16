@@ -24,12 +24,7 @@ class OptionDialog(QDialog):
         self.ui.lineEdit.setText(self.settings.get('Directory', 'default'))
         self.ui.lineEdit_2.setText(self.settings.get('Look', 'background'))
 
-        # Hotkeys
-        for option in self.settings.options('Hotkeys'):
-            item = QListWidgetItem()
-            item.setText(option)
-            item.setData(Qt.UserRole, self.settings.get('Hotkeys', option))
-            self.ui.listWidget.addItem(item)
+        self.generate_hotkey_list()
 
         # Global
         self.ui.button_save.clicked.connect(self.close)
@@ -40,10 +35,29 @@ class OptionDialog(QDialog):
 
         self.ui.button_assign.clicked.connect(self.on_new_shortcut)
 
+    def generate_hotkey_list(self):
+        for option in self.settings.options('Hotkeys'):
+            item = QListWidgetItem()
+            item.setText(option)
+            item.setData(Qt.UserRole, self.settings.get('Hotkeys', option))
+            self.ui.listWidget.addItem(item)
+
     def on_listWidget_currentItemChanged(self, new, prev):
-        self.ui.input_cur_shortcut.setText(new.data(Qt.UserRole))
+        if new is not None:
+            self.selected_option = new.text()
+            self.ui.input_cur_shortcut.setText(new.data(Qt.UserRole))
 
     def on_new_shortcut(self):
-        self.settings.set('Hotkeys', 'Exit', str(QKeySequence.toString(self.new_shortcut.keySequence())))
+        _new_shortcut = str(QKeySequence.toString(self.new_shortcut.keySequence()))
+
+        self.settings.set('Hotkeys', self.selected_option, _new_shortcut)
         with open('config.ini', 'w') as configfile:
             self.settings.write(configfile)
+
+        # Regenerate list
+        self.ui.listWidget.clear()
+        self.generate_hotkey_list()
+
+        # Update inputs
+        self.ui.input_cur_shortcut.setText(_new_shortcut)
+        self.new_shortcut.clear()

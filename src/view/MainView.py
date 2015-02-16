@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-# PyQt5
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence
 from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut
 
-# Hitagi Reader
 from resources.hitagi import Ui_Hitagi
 
 from model.settings import SettingsModel
@@ -13,7 +11,6 @@ from model.settings import SettingsModel
 from controller.canvas import CanvasController
 from controller.main import MainController
 
-# Misc
 import webbrowser
 
 class MainView(QMainWindow):
@@ -135,9 +132,12 @@ class MainView(QMainWindow):
     # File menu
     def on_wallpaper(self):
         from view.WallpaperView import WallpaperDialog
-        dialog = WallpaperDialog(self, None, None)
-        dialog.show()
-        #self.main_controller.set_wallpaper()
+        from controller.wallpaper import WallpaperController
+
+        _image = self.model.get_image()
+        if _image is not None:
+            dialog = WallpaperDialog(self, None, WallpaperController(self.model), _image)
+            dialog.show()
 
     def on_clipboard(self):
         self.main_controller.copy_to_clipboard()
@@ -204,11 +204,13 @@ class MainView(QMainWindow):
 
     # Update UI from model
     def update_ui_from_model(self):
+        # On changing directory
         if self.model.image_index != -1:
             self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
             self.ui.statusbar.showMessage(str(self.model.image_paths[self.model.image_index]) + "    " + str(self.model.image_index + 1) + " of " + str(len(self.model.image_paths)))
             self.ui.graphicsView.setScene(self.canvas.scene)
 
+        # Fullscreen mode switching
         if self.model.is_fullscreen:
             self.showFullScreen()
             if self.model.hide_menubar:

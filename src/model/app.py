@@ -2,9 +2,9 @@
 from pathlib import Path
 
 from PyQt5 import uic
-from PyQt5.QtCore import (pyqtSlot, QDir, Qt)
-from PyQt5.QtGui import (QFont, QIcon, QImage, QClipboard)
-from PyQt5.QtWidgets import (QApplication, QFileSystemModel, QFileDialog, QMessageBox)
+from PyQt5.QtCore import pyqtSlot, QDir, Qt
+from PyQt5.QtGui import QFont, QIcon, QImage, QClipboard
+from PyQt5.QtWidgets import QApplication, QFileSystemModel, QFileDialog, QMessageBox
 
 from model.canvas import CanvasModel
 
@@ -14,6 +14,9 @@ class AppModel(object):
         self.canvas = CanvasModel()
 
         self.clipboard = QApplication.clipboard()
+
+        self.hide_menubar = True
+        self.hide_statusbar = True
 
         self.is_fullscreen = False # fullscreen mode
         self.image_paths = [] # images of the current directory
@@ -51,7 +54,7 @@ class AppModel(object):
 
     def change_directory(self, directory = None):
         if not directory:
-            new_directory = QFileDialog.getExistingDirectory(None, "HALLO", '/')
+            new_directory = QFileDialog.getExistingDirectory(None, "Change directory", '/')
         else:
             new_directory = directory
 
@@ -72,33 +75,4 @@ class AppModel(object):
             self.image = self.get_image()
         else:
             print("no images")
-
-    def prev_image(self):
-        if self.image_index != 0:
-            self.image_index -= 1
-
-    def next_image(self):
-        if self.image_index < (len(self.image_paths) - 1):
-            self.image_index += 1
-
-    def toggle_fullscreen(self):
-        # Already in fullscreen mode
-        if self.is_fullscreen:
-            self.is_fullscreen = False
-        else:
-            self.is_fullscreen = True
-
-    def copy_to_clipboard(self):
-        if self.image_index != -1:
-            self.clipboard.setImage(self.get_image(), QClipboard.Clipboard)
-
-    def set_wallpaper(self):
-        import win32api, win32con, win32gui
-
-        if self.get_image_path() is not None:
-            path = self.get_image_path()
-
-            key = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER,"Control Panel\\Desktop",0,win32con.KEY_SET_VALUE)
-            win32api.RegSetValueEx(key, "WallpaperStyle", 0, win32con.REG_SZ, "0")
-            win32api.RegSetValueEx(key, "TileWallpaper", 0, win32con.REG_SZ, "0")
-            win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path, win32con.SPIF_UPDATEINIFILE | win32con.SPIF_SENDCHANGE)
+            
