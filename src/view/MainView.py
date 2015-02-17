@@ -2,12 +2,12 @@
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex
 from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence
-from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut, QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut, QAbstractItemView, QAction
 
 from resources.hitagi import Ui_Hitagi
 
 from model.settings import SettingsModel
-
+from model.favorites import FavoritesModel
 from controller.canvas import CanvasController
 from controller.main import MainController
 
@@ -98,6 +98,18 @@ class MainView(QMainWindow):
         self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom original')))
         self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fullscreen')))
         
+        # Load favorites in UI
+        self.load_favorites()
+
+    def load_favorites(self):
+        self.favorites = FavoritesModel()
+        self.ui.menuFavorites.clear()
+        for item in self.favorites.items():
+            self.ui.menuFavorites.addAction(item).triggered.connect((lambda item: lambda: self.on_open_favorite(item))(item))
+
+    def on_open_favorite(self, path):
+        self.main_controller.change_directory(path)
+
     def center_ui(self):
         ui_geometry = self.frameGeometry()
         center_point = QDesktopWidget().availableGeometry().center()
@@ -189,7 +201,7 @@ class MainView(QMainWindow):
         self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
 
     def on_change_directory(self):
-        self.main_controller.change_directory(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        self.main_controller.change_directory()
 
     # View menu
     def on_zoom_in(self):
@@ -219,9 +231,11 @@ class MainView(QMainWindow):
     # Favorite menu
     def on_add_to_favorites(self):
         self.main_controller.add_to_favorites()
+        self.load_favorites()
 
     def on_remove_from_favorites(self):
         self.main_controller.remove_from_favorites()
+        self.load_favorites()
 
     # Help menu
     def on_changelog(self):

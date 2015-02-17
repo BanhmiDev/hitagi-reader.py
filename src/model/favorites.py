@@ -11,22 +11,28 @@ class FavoritesModel(object):
         self.settings = SettingsModel()
         self.favorites = []
 
+        for option in self.settings.options('Favorites'):
+            self.add(self.settings.get('Favorites', option))
+
     def add(self, path):
         if path not in self.favorites:
             self.favorites.append(path)
 
     def remove(self, path):
-        self.favorites.remove(path)
+        if path in self.favorites:
+            self.favorites.remove(path)
 
     def items(self):
         return self.favorites
 
     def save(self):
+        self.settings.remove_section('Favorites')
+
         if not self.settings.has_section('Favorites'):
             self.settings.add_section('Favorites')
 
         for index, item in enumerate(self.items()):
             if not self.settings.has_option('Favorites', str(index)):
                 self.settings.set('Favorites', str(index), str(item))
-                
+
         self.settings.apply_settings()

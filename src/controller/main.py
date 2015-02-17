@@ -19,7 +19,7 @@ class MainController(object):
         self.model = model
         self.canvas = CanvasController(self.model.canvas)
 
-    def change_directory(self, container_width, container_height, directory = None):
+    def change_directory(self, directory = None):
         """Change current directory."""
         if not directory:
             new_directory = QFileDialog.getExistingDirectory(None, "Change directory", '/')
@@ -43,8 +43,8 @@ class MainController(object):
         self.model.directory = new_directory
         #print(Path(str(new_directory)))
 
-        image = self.model.get_image()
-        self.canvas.update_canvas(container_width, container_height, image)
+        #image = self.model.get_image()
+        #self.canvas.update_canvas(container_width, container_height, image)
         self.model.announce_update()
 
     def add_to_favorites(self):
@@ -54,10 +54,8 @@ class MainController(object):
 
     def remove_from_favorites(self):
         """Remove current directory from favorite list."""
-        if not self.settings.has_section('Favorites'):
-            self.settings.add_section('Favorites')
-        if not self.settings.has_option('Favorites', self.model.directory):
-            self.settings.set('Favorites', self.model.directory, '0')
+        self.favorites.remove(str(self.model.directory))
+        self.favorites.save()
 
     def update_canvas(self, container_width, container_height, image = None):
         """Update canvas with image."""
