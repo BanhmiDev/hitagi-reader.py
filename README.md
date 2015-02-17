@@ -1,19 +1,24 @@
 Hitagi Reader
 =============
 [![Supported Browsers](https://img.shields.io/badge/platforms-win%20|%20osx%20|%20linux-green.svg?style=flat-square)](https://github.com/gimu/hitagi-reader/releases) [![Releases](https://img.shields.io/github/release/gimu/hitagi-reader.svg?style=flat-square)](https://github.com/gimu/hitagi-reader/releases) [![Issues](https://img.shields.io/github/issues/gimu/hitagi-reader.svg?style=flat-square)](https://github.com/gimu/hitagi-reader/issues)                                    
-A simple and lightweight image viewer using PyQt5. 
-Aimed to show collections of images in an easy and efficient way.
+An open source cross-platform manga/image viewer.
 
 ## Features
-Hitagi Reader is still in development. Following features are available in the latest version.
+Hitagi Reader is still in development.
 
-- Supported file formats include .JPG .PNG .GIF
+- Scaling and modifying images
 - Saving/favoriting directory paths
 - Custom hotkey management
-- Various localizations (english, german)
+- Various localizations
 
 ## Installing
 Download the latest [Hitagi Reader release](https://github.com/gimu/hitagi-reader/releases).
+
+## Documentation
+Head to the [wiki page](https://github.com/gimu/hitagi-reader/wiki) for the official documentation.
+
+## Contributing
+Make Hitagi Reader better by following [these guidelines](https://github.com/gimu/hitagi-reader/blob/master/CONTRIBUTING.md).
 
 ## License
 Hitagi Reader is licensed under the [MIT](http://opensource.org/licenses/MIT) License.
