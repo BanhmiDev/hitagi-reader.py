@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from PyQt5 import uic, QtCore, QtGui
-from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal
+from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex
 from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence
-from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut, QAbstractItemView
 
 from resources.hitagi import Ui_Hitagi
 
@@ -14,13 +14,6 @@ from controller.main import MainController
 import webbrowser
 
 class MainView(QMainWindow):
-
-    @property
-    def include_subfolders(self):
-        return self.ui.actionInclude_subfolders.isChecked()
-    @include_subfolders.setter
-    def include_subfolders(self, value):
-        self.ui.actionInclude_subfolders.setChecked(value)
 
     def __init__(self, model, controller):
         self.settings = SettingsModel()
@@ -38,20 +31,17 @@ class MainView(QMainWindow):
         self.ui = Ui_Hitagi()
         self.ui.setupUi(self)
 
-        #self.ui.pushButton_change.clicked.connect(self.on_change_directory)
-
         # File menu
-        self.ui.actionSet_as_wallpaper.triggered.connect(self.on_wallpaper)
+        self.ui.actionSet_as_wallpaper.triggered.connect(self.on_set_as_wallpaper)
         self.ui.actionCopy_to_clipboard.triggered.connect(self.on_clipboard)
         self.ui.actionOpen_current_directory.triggered.connect(self.on_current_dir)
         self.ui.actionOptions.triggered.connect(self.on_options)
         self.ui.actionExit.triggered.connect(self.on_close)
 
         # Folder menu
-        self.ui.actionOpen_next.triggered.connect(self.on_next_image)
-        self.ui.actionOpen_previous.triggered.connect(self.on_previous_image)
+        self.ui.actionOpen_next.triggered.connect(self.on_next_item)
+        self.ui.actionOpen_previous.triggered.connect(self.on_previous_item)
         self.ui.actionChange_directory.triggered.connect(self.on_change_directory)
-        self.ui.actionInclude_subfolders.triggered.connect(self.on_include_subfolders)
 
         # View menu
         self.ui.actionZoom_in.triggered.connect(self.on_zoom_in)
@@ -62,6 +52,10 @@ class MainView(QMainWindow):
         self.ui.actionFile_list.triggered.connect(self.on_toggle_filelist)
         self.ui.actionFullscreen.triggered.connect(self.on_fullscreen)
 
+        # Favorite menu
+        self.ui.actionAdd_to_favorites.triggered.connect(self.on_add_to_favorites)
+        self.ui.actionRemove_from_favorites.triggered.connect(self.on_remove_from_favorites)
+
         # Help menu
         self.ui.actionChangelog.triggered.connect(self.on_changelog)
         self.ui.actionAbout.triggered.connect(self.on_about)
@@ -70,17 +64,26 @@ class MainView(QMainWindow):
         stylesheet_dir = "resources/hitagi.stylesheet"
         with open(stylesheet_dir, "r") as sh:
             self.setStyleSheet(sh.read())
-
-        # File view
+        
+        # File listing
         self.file_model = QFileSystemModel()
+        self.file_model.setFilter(QDir.NoDotAndDotDot | QDir.AllDirs | QDir.Files)
+        self.file_model.setNameFilters(['*.jpg', '*.png', '*.jpeg'])
+        self.file_model.setNameFilterDisables(False)
         self.file_model.setRootPath(self.settings.get('Directory', 'default'))
 
         self.ui.treeView.setModel(self.file_model)
-        self.ui.treeView.setRootIndex(self.file_model.index(self.settings.get('Directory', 'default')))
         self.ui.treeView.setColumnWidth(0, 200) 
         self.ui.treeView.setColumnWidth(1, 200)
         self.ui.treeView.hideColumn(1)
         self.ui.treeView.hideColumn(2)
+
+        # Double click
+        self.ui.treeView.activated.connect(self.on_dir_list_activated)
+        # Update file list
+        self.ui.treeView.clicked.connect(self.on_dir_list_clicked)
+        # Open parent
+        self.ui.button_open_parent.clicked.connect(self.on_open_parent)
 
         # Shortcuts
         _translate = QtCore.QCoreApplication.translate
@@ -115,9 +118,9 @@ class MainView(QMainWindow):
             if e.key() == QKeySequence(self.settings.get('Hotkeys', 'Exit')):
                 self.on_close()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Next')):
-                self.on_next_image()
+                self.on_next_item()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Previous')):
-                self.on_previous_image()
+                self.on_previous_item()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Directory')):
                 self.on_change_directory()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom in')):
@@ -129,8 +132,27 @@ class MainView(QMainWindow):
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Fullscreen')):
                 self.main_controller.toggle_fullscreen()
 
+    def on_open_parent(self):
+        parent_index = self.file_model.parent(self.file_model.index(self.file_model.rootPath()))
+        self.file_model.setRootPath(self.file_model.filePath(parent_index))
+        self.ui.treeView.setRootIndex(parent_index)
+
+        # Update directory path
+        self.model.directory = self.file_model.filePath(parent_index)
+
+    def on_dir_list_activated(self, index):
+        if self.file_model.hasChildren(index) is not False:
+            self.file_model.setRootPath(self.file_model.filePath(index))
+            self.ui.treeView.setRootIndex(index)
+
+            # Save current path
+            self.model.directory = self.file_model.filePath(index)
+        
+    def on_dir_list_clicked(self, index):
+        self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
+
     # File menu
-    def on_wallpaper(self):
+    def on_set_as_wallpaper(self):
         from view.WallpaperView import WallpaperDialog
         from controller.wallpaper import WallpaperController
 
@@ -156,17 +178,18 @@ class MainView(QMainWindow):
         self.close()
 
     # Folder menu
-    def on_next_image(self):
-        self.main_controller.next_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+    def on_next_item(self):
+        index = self.ui.treeView.moveCursor(QAbstractItemView.MoveDown, Qt.NoModifier)
+        self.ui.treeView.setCurrentIndex(index)
+        self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
 
-    def on_previous_image(self):
-        self.main_controller.prev_image(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+    def on_previous_item(self):
+        index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
+        self.ui.treeView.setCurrentIndex(index)
+        self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
 
     def on_change_directory(self):
         self.main_controller.change_directory(self.ui.graphicsView.width(), self.ui.graphicsView.height())
-
-    def on_include_subfolders(self):
-        self.main_controller.change_include_subfolders(self.include_subfolders)
 
     # View menu
     def on_zoom_in(self):
@@ -193,6 +216,13 @@ class MainView(QMainWindow):
     def on_fullscreen(self):
         self.main_controller.toggle_fullscreen()
 
+    # Favorite menu
+    def on_add_to_favorites(self):
+        self.main_controller.add_to_favorites()
+
+    def on_remove_from_favorites(self):
+        self.main_controller.remove_from_favorites()
+
     # Help menu
     def on_changelog(self):
         webbrowser.open('https://gimu.org/hitagi-reader/docs')
@@ -202,13 +232,15 @@ class MainView(QMainWindow):
         dialog = AboutDialog(self, None, None)
         dialog.show()
 
-    # Update UI from model
     def update_ui_from_model(self):
+        """Update UI from model."""
         # On changing directory
-        if self.model.image_index != -1:
-            self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
-            self.ui.statusbar.showMessage(str(self.model.image_paths[self.model.image_index]) + "    " + str(self.model.image_index + 1) + " of " + str(len(self.model.image_paths)))
-            self.ui.graphicsView.setScene(self.canvas.scene)
+        self.file_model.setRootPath(self.model.directory)
+        self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
+
+        #if self.model.image_path is not None:
+           # self.ui.statusbar.showMessage(str(self.model.image_path) + "    " + str(self.model.image_index + 1) + " of " + str(len(self.model.image_paths)))
+        self.ui.graphicsView.setScene(self.canvas.scene)
 
         # Fullscreen mode switching
         if self.model.is_fullscreen:
@@ -223,5 +255,3 @@ class MainView(QMainWindow):
                 self.ui.menubar.show()
             if self.model.hide_statusbar:
                 self.ui.statusbar.show()
-
-        self.include_subfolders = self.model.include_subfolders
