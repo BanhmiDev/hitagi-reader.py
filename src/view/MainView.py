@@ -183,7 +183,7 @@ class MainView(QMainWindow):
 
     def on_options(self):
         from view.OptionsView import OptionDialog
-        self.dialog = OptionDialog(self, None, None)
+        self.dialog = OptionDialog(self)
         self.dialog.show()
 
     def on_close(self):

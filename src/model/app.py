@@ -11,22 +11,14 @@ class AppModel(object):
     def __init__(self):
         self.canvas = CanvasModel()
 
-        self.clipboard = QApplication.clipboard()
-
-        self.hide_menubar = True
-        self.hide_statusbar = True
-
-        self.is_fullscreen = False # fullscreen mode
-        #self.image_paths = [] # images of the current directory
-
         self._update_funcs = []
 
-        # variable placeholders
-        #self.include_subfolders = True
-        #self.image_index = -1 # index of current shown image
+        self.clipboard = QApplication.clipboard()
+        self.hide_menubar = False
+        self.hide_statusbar = False
+        self.is_fullscreen = False
         self.directory = None
         self.image_path = None
-
         self.scaleFactor = 1
 
     # subscribe a view method for updating

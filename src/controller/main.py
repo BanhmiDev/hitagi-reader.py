@@ -19,14 +19,19 @@ class MainController(object):
         self.model = model
         self.canvas = CanvasController(self.model.canvas)
 
+        self.start() # Initial calls
+
+    def start(self):
+        self.change_directory(self.settings.get('Directory', 'default'))
+
     def change_directory(self, directory = None):
         """Change current directory."""
         if not directory:
-            new_directory = QFileDialog.getExistingDirectory(None, "Change directory", '/')
+            new_directory = QFileDialog.getExistingDirectory(None, "Change current directory", '/')
         else:
             new_directory = directory
 
-        # if canceled, return nothing
+        # if dialog canceled
         if not new_directory:
             return
 
