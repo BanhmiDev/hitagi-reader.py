@@ -12,8 +12,6 @@ class SettingsModel(ConfigParser):
 
         self._update_funcs = []
 
-        self.applied = False
-
     # subscribe a view method for updating
     def subscribe_update_func(self, func):
         if func not in self._update_funcs:

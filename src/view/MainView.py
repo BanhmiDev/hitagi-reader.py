@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from PyQt5 import uic, QtCore, QtGui
+from PyQt5 import uic, QtCore, QtGui, Qt
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex
-from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence
+from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut, QAbstractItemView, QAction
 
 from resources.hitagi import Ui_Hitagi
@@ -101,6 +101,9 @@ class MainView(QMainWindow):
         # Load favorites in UI
         self.load_favorites()
 
+        # Background
+        self.ui.graphicsView.setBackgroundBrush(QBrush(QColor(self.settings.get('Look', 'background')), Qt.SolidPattern))
+
     def load_favorites(self):
         self.favorites = FavoritesModel()
         self.ui.menuFavorites.clear()
@@ -125,8 +128,9 @@ class MainView(QMainWindow):
         if e.key() == QtCore.Qt.Key_Escape and self.model.is_fullscreen:
             self.main_controller.toggle_fullscreen()
 
-        # Redefine shortcuts when hiding menubar
-        if self.model.is_fullscreen and self.model.hide_menubar:
+        # Redefine shortcuts when hiding menubar 
+        # somehow not working 18/2/2015
+        if self.model.is_fullscreen and self.ui.menubar.isHidden():
             if e.key() == QKeySequence(self.settings.get('Hotkeys', 'Exit')):
                 self.on_close()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Next')):
@@ -183,7 +187,7 @@ class MainView(QMainWindow):
 
     def on_options(self):
         from view.OptionsView import OptionDialog
-        self.dialog = OptionDialog(self)
+        self.dialog = OptionDialog(self, self.ui)
         self.dialog.show()
 
     def on_close(self):
@@ -248,6 +252,8 @@ class MainView(QMainWindow):
 
     def update_ui_from_model(self):
         """Update UI from model."""
+        self.settings = SettingsModel()
+
         # On changing directory
         self.file_model.setRootPath(self.model.directory)
         self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
@@ -259,13 +265,13 @@ class MainView(QMainWindow):
         # Fullscreen mode switching
         if self.model.is_fullscreen:
             self.showFullScreen()
-            if self.model.hide_menubar:
+            if self.settings.get('Misc', 'hide_menubar') == 'True':
                 self.ui.menubar.hide()
-            if self.model.hide_statusbar:
+            if self.settings.get('Misc', 'hide_statusbar') == 'True':
                 self.ui.statusbar.hide()
         else:
             self.showNormal()
-            if self.model.hide_menubar:
+            if self.settings.get('Misc', 'hide_menubar') == 'True':
                 self.ui.menubar.show()
-            if self.model.hide_statusbar:
+            if self.settings.get('Misc', 'hide_statusbar') == 'True':
                 self.ui.statusbar.show()

@@ -22,6 +22,7 @@ class MainController(object):
         self.start() # Initial calls
 
     def start(self):
+        """Initial calls."""
         self.change_directory(self.settings.get('Directory', 'default'))
 
     def change_directory(self, directory = None):

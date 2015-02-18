@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QDialog, QListWidgetItem, QKeySequenceEdit
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtCore import Qt
 
 from model.settings import SettingsModel
 from controller.settings import SettingsController
@@ -10,9 +10,10 @@ from resources.options import Ui_Dialog
 
 class OptionDialog(QDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent, parent_ui):
         self.model = SettingsModel()
         self.controller = SettingsController(self.model)
+        self.parent_ui = parent_ui
         super(OptionDialog, self).__init__(parent)
         self.build_ui()
 
@@ -89,6 +90,7 @@ class OptionDialog(QDialog):
 
     def on_save(self):
         self.controller.apply_settings()
+        self.parent_ui.graphicsView.setBackgroundBrush(QBrush(QColor(self.model.get('Look', 'background')), Qt.SolidPattern))
         self.close()
 
     def update_ui_from_model(self):

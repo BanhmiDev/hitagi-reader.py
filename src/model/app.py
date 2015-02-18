@@ -14,8 +14,6 @@ class AppModel(object):
         self._update_funcs = []
 
         self.clipboard = QApplication.clipboard()
-        self.hide_menubar = False
-        self.hide_statusbar = False
         self.is_fullscreen = False
         self.directory = None
         self.image_path = None

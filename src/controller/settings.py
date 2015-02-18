@@ -56,5 +56,3 @@ class SettingsController(object):
         """Override settings."""
         with open('config.ini', 'w', encoding='utf-8') as configfile:
            self.model.write(configfile)
-
-        self.applied = True
