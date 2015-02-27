@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, QDir, QThread
-from PyQt5.QtGui import QImage
+from PyQt5.QtGui import QImage, QClipboard
 from PyQt5.QtWidgets import QFileDialog
 
 from model.settings import SettingsModel
@@ -110,5 +110,5 @@ class MainController(object):
 
     def copy_to_clipboard(self):
         if self.model.image_path is not None:
-            self.model.clipboard.setImage(self.get_image(), QClipboard.Clipboard)
+            self.model.clipboard.setImage(self.model.get_image(), QClipboard.Clipboard)
         
