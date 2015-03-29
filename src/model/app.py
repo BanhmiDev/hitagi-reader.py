@@ -35,7 +35,8 @@ class AppModel(object):
             func()
 
     def get_image(self):
-        return QImage(str(self.image_path))
+        image = QImage(str(self.image_path))
+        return None if image.isNull() else image
 
     def get_image_path(self):
         return str(self.image_paths[self.image_index]) if self.image_index > -1 else None

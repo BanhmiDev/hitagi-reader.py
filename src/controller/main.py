@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from pathlib import Path
 
-from PyQt5 import uic
-from PyQt5.QtCore import pyqtSlot, QDir, QThread
 from PyQt5.QtGui import QImage, QClipboard
 from PyQt5.QtWidgets import QFileDialog
 
@@ -19,7 +16,7 @@ class MainController(object):
         self.model = model
         self.canvas = CanvasController(self.model.canvas)
 
-        self.start() # Initial calls
+        self.start()
 
     def start(self):
         """Initial calls."""
@@ -32,25 +29,11 @@ class MainController(object):
         else:
             new_directory = directory
 
-        # if dialog canceled
+        # Error suppression
         if not new_directory:
             return
 
-        # old concept: open directory and load paths of images
-        #if self.model.include_subfolders == True:
-        #    _image_paths = [i for i in Path(new_directory).rglob("*") if i.suffix.lower() in ['.jpg', '.png']]
-        #else:
-        #    _image_paths = [i for i in Path(new_directory).glob("*") if i.suffix.lower() in ['.jpg', '.png']]
-
-        #if len(_image_paths) > 0:
-            #self.model.image_paths = _image_paths
-            #self.model.image_index = 0
-
         self.model.directory = new_directory
-        #print(Path(str(new_directory)))
-
-        #image = self.model.get_image()
-        #self.canvas.update_canvas(container_width, container_height, image)
         self.model.announce_update()
 
     def add_to_favorites(self):
@@ -63,11 +46,6 @@ class MainController(object):
         self.favorites.remove(str(self.model.directory))
         self.favorites.save()
 
-    def update_canvas(self, container_width, container_height, image = None):
-        """Update canvas with image."""
-        self.canvas.update_canvas(container_width, container_height, image)
-        self.model.announce_update()
-
     def toggle_fullscreen(self):
         """Toggle between fullscreen mode."""
         if self.model.is_fullscreen:
@@ -78,37 +56,21 @@ class MainController(object):
         # Update UI
         self.model.announce_update()
 
+    # Todo: remove/replace with canvas controller function
+    def update_canvas(self, container_width, container_height, image = None):
+        """Update canvas with image."""
+        self.canvas.update_image(container_width, container_height, image, self.settings.getint('Viewport', 'selection'))
+        self.model.announce_update()
+
     def open_image(self, container_width, container_height, path):
         """Open specific image via path."""
         image = QImage(str(path))
         self.model.image_path = path
-        # Update image index
-        #if _path in self.model.image_paths:
-            #self.model.image_index = self.model.image_paths.index(_path)
-
-        self.canvas.update_canvas(container_width, container_height, image)
+        self.canvas.update_image(container_width, container_height, image, self.settings.getint('Viewport', 'selection'))
         self.model.announce_update()
 
-    #def prev_image(self, container_width, container_height):
-    #    """Go to previous image."""
-    #    if self.model.image_index > 0:
-    #        self.model.image_index -= 1
-    #    image = self.model.get_image()
-    #
-    #    # Use canvas controller
-    #    self.canvas.update_canvas(container_width, container_height, image)
-    #    self.model.announce_update()
-    #
-    #def next_image(self, container_width, container_height):
-    #    """Go to next image."""
-    #    if self.model.image_index < (len(self.model.image_paths) - 1):
-    #        self.model.image_index += 1
-    #    image = self.model.get_image()
-    #
-    #    self.canvas.update_canvas(container_width, container_height, image)
-    #    self.model.announce_update()
-
     def copy_to_clipboard(self):
+        """Open current image to clipboard."""
         if self.model.image_path is not None:
             self.model.clipboard.setImage(self.model.get_image(), QClipboard.Clipboard)
         

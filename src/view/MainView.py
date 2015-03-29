@@ -67,7 +67,7 @@ class MainView(QMainWindow):
         # File listing
         self.file_model = QFileSystemModel()
         self.file_model.setFilter(QDir.NoDotAndDotDot | QDir.AllDirs | QDir.Files)
-        self.file_model.setNameFilters(['*.jpg', '*.png', '*.jpeg'])
+        self.file_model.setNameFilters(['*.gif', '*.jpeg', '*.jpg', '*.png'])
         self.file_model.setNameFilterDisables(False)
         self.file_model.setRootPath(self.settings.get('Directory', 'default'))
 
@@ -131,9 +131,10 @@ class MainView(QMainWindow):
         if e.key() == Qt.Key_Escape and self.model.is_fullscreen:
             self.main_controller.toggle_fullscreen()
 
-        # Redefine shortcuts when hiding menubar 
-        # somehow not working 18/2/2015
-        if self.model.is_fullscreen and self.ui.menubar.isHidden():
+        # Redefine shortcuts when hiding menubar
+        if self.model.is_fullscreen and self.settings.get('Misc', 'hide_menubar') == "True":
+            print("jo")
+            print(QKeySequence(self.settings.get('Hotkeys', 'Zoom in')))
             if e.key() == QKeySequence(self.settings.get('Hotkeys', 'Exit')):
                 self.on_close()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Next')):
@@ -143,6 +144,7 @@ class MainView(QMainWindow):
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Directory')):
                 self.on_change_directory()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom in')):
+                print("Ok")
                 self.on_zoom_in()
             elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom out')):
                 self.on_zoom_out()
@@ -190,7 +192,7 @@ class MainView(QMainWindow):
 
     def on_options(self):
         from view.OptionsView import OptionDialog
-        self.dialog = OptionDialog(self, self.ui)
+        self.dialog = OptionDialog(self)
         self.dialog.show()
 
     def on_close(self):
@@ -211,20 +213,21 @@ class MainView(QMainWindow):
         self.main_controller.change_directory()
 
     # View menu
+    # See controller/canvas.py for last parameter meaning
     def on_zoom_in(self):
-        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1, 1.1)
+        self.canvas_controller.scale_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1.1)
 
     def on_zoom_out(self):
-        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1, 0.9)
+        self.canvas_controller.scale_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 0.9)
 
     def on_zoom_original(self):
-        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 4)
+        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
 
     def on_scale_image_to_width(self):
-        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 2)
+        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1)
 
     def on_scale_image_to_height(self):
-        self.canvas_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
+        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 2)
 
     def on_toggle_filelist(self):
         if self.ui.actionFile_list.isChecked():

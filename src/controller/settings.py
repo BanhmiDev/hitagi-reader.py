@@ -32,9 +32,16 @@ class SettingsController(object):
         self.model.announce_update()
 
     def update_boolean(self, option, state):
+        """Handle switches."""
         state = True if state == 2 else False
         self.model.set('Misc', option, str(state))
         self.model.announce_update()
+
+    def update_viewport_behaviour(self, index):
+        """Handle default image presentation."""
+        if index >= 0:
+            self.model.set('Viewport', 'selection', str(index))
+            self.model.announce_update()
 
     def load_defaults(self):
         """Load defaults."""
