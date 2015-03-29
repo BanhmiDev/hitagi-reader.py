@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-from PyQt5 import uic, QtCore, QtGui, Qt
-from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex
-from PyQt5.QtGui import QIcon, QPixmap, QImage, QKeySequence, QBrush, QColor
-from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QLabel, QShortcut, QAbstractItemView, QAction
+import webbrowser
+
+from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
+from PyQt5.QtGui import QKeySequence, QBrush, QColor
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView
 
 from resources.hitagi import Ui_Hitagi
 
@@ -10,8 +11,6 @@ from model.settings import SettingsModel
 from model.favorites import FavoritesModel
 from controller.canvas import CanvasController
 from controller.main import MainController
-
-import webbrowser
 
 class MainView(QMainWindow):
 
@@ -73,8 +72,8 @@ class MainView(QMainWindow):
         self.file_model.setRootPath(self.settings.get('Directory', 'default'))
 
         self.ui.treeView.setModel(self.file_model)
-        self.ui.treeView.setColumnWidth(0, 200) 
-        self.ui.treeView.setColumnWidth(1, 200)
+        self.ui.treeView.setColumnWidth(0, 120)
+        self.ui.treeView.setColumnWidth(1, 120)
         self.ui.treeView.hideColumn(1)
         self.ui.treeView.hideColumn(2)
 
@@ -84,14 +83,18 @@ class MainView(QMainWindow):
         self.ui.treeView.clicked.connect(self.on_dir_list_clicked)
         # Open parent
         self.ui.button_open_parent.clicked.connect(self.on_open_parent)
+        self.ui.button_favorite.clicked.connect(self.on_add_to_favorites)
 
         # Shortcuts
-        _translate = QtCore.QCoreApplication.translate
+        _translate = QCoreApplication.translate
         self.ui.actionExit.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Exit')))
 
         self.ui.actionOpen_next.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Next')))
         self.ui.actionOpen_previous.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Previous')))
         self.ui.actionChange_directory.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Directory')))
+
+        self.ui.actionAdd_to_favorites.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Add to favorites')))
+        self.ui.actionRemove_from_favorites.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Remove from favorites')))
 
         self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom in')))
         self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom out')))
@@ -125,7 +128,7 @@ class MainView(QMainWindow):
 
     # Additional static shortcuts
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Escape and self.model.is_fullscreen:
+        if e.key() == Qt.Key_Escape and self.model.is_fullscreen:
             self.main_controller.toggle_fullscreen()
 
         # Redefine shortcuts when hiding menubar 
@@ -258,8 +261,6 @@ class MainView(QMainWindow):
         self.file_model.setRootPath(self.model.directory)
         self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
 
-        #if self.model.image_path is not None:
-           # self.ui.statusbar.showMessage(str(self.model.image_path) + "    " + str(self.model.image_index + 1) + " of " + str(len(self.model.image_paths)))
         self.ui.graphicsView.setScene(self.canvas.scene)
 
         # Fullscreen mode switching
@@ -267,11 +268,7 @@ class MainView(QMainWindow):
             self.showFullScreen()
             if self.settings.get('Misc', 'hide_menubar') == 'True':
                 self.ui.menubar.hide()
-            if self.settings.get('Misc', 'hide_statusbar') == 'True':
-                self.ui.statusbar.hide()
         else:
             self.showNormal()
             if self.settings.get('Misc', 'hide_menubar') == 'True':
                 self.ui.menubar.show()
-            if self.settings.get('Misc', 'hide_statusbar') == 'True':
-                self.ui.statusbar.show()

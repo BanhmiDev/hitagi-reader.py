@@ -1,0 +1,116 @@
+/* Dock */
+QDockWidget {    
+    font-size: 16px;
+    color: #989898;
+    border: 1px solid lightgray;
+    titlebar-close-icon: none;
+    titlebar-normal-icon: none;
+}
+
+QDockWidget::title {
+    background: #232323;
+    padding-top: 4px;
+    padding-left: 6px;
+}
+
+QDockWidget::close-button, QDockWidget::float-button {
+    border: 1px solid transparent;
+    background: darkgray;
+    padding: 0px;
+}
+
+QDockWidget::close-button:hover, QDockWidget::float-button:hover {
+    background: gray;
+}
+
+QDockWidget::close-button:pressed, QDockWidget::float-button:pressed {
+    padding: 1px -1px -1px 1px;
+}
+
+QMainWindow::separator {
+    background: none;
+    width: 0px;
+    border: 0px solid #232323;
+}
+
+/* Header */
+QHeaderView::section {
+    background-color: #232323;
+    color: #989898;
+    padding: 4px 0px;
+    border: none;
+}
+
+QHeaderView::section:checked {
+    background-color: red;
+}
+
+/* style the sort indicator */
+QHeaderView::down-arrow {
+    image: url(down_arrow.png);
+}
+
+QHeaderView::up-arrow {
+    image: url(up_arrow.png);
+}
+
+/* Treeview */
+QTreeView {
+    background: #232323;
+    show-decoration-selected: 1;
+    border: none;
+}
+
+QTreeView::item {
+    padding: 2px 4px;
+    color: #ffffff;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+}
+
+QTreeView::item:hover {
+    color: #ffffff;
+    background: #00A4A4;
+}
+
+QTreeView::item:selected {
+    border: 1px solid #567dbc;
+}
+
+QTreeView::item:selected:active{
+    background: #00A4A4;
+}
+
+QTreeView::item:selected:!active {
+    background #00A4A4;
+}
+
+/* Groupbox */
+QGroupBox {
+    border: 1px solid #ccc;
+    border-radius: 0;
+    margin-top: 2ex;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 3px;
+}
+
+/* UI Interactions */
+QPushButton {
+    font-size: 12px;
+    color: #FFFFFF;
+    border: none;
+    background: #00A4A4;
+    padding: 4px;
+}
+
+QLineEdit {
+    border-radius: 1px;
+    border: 1px solid #ccc;
+    padding: 2px 8px;
+    background: #FFFFFF;
+    selection-background-color: darkgray;
+}

@@ -45,7 +45,6 @@ class OptionDialog(QDialog):
     def generate_checkbox_list(self):
         self.ui.checkbox_check_updates.setChecked(self.model.get('Misc', 'check_updates') == 'True')
         self.ui.checkbox_hide_menubar.setChecked(self.model.get('Misc', 'hide_menubar') == 'True')
-        self.ui.checkbox_hide_statusbar.setChecked(self.model.get('Misc', 'hide_statusbar') == 'True')
 
     def generate_hotkey_list(self):
         for option in self.model.options('Hotkeys'):
@@ -84,9 +83,6 @@ class OptionDialog(QDialog):
 
     def on_checkbox_hide_menubar_stateChanged(self, state):
         self.controller.update_boolean('hide_menubar', state)
-
-    def on_checkbox_hide_statusbar_stateChanged(self, state):
-        self.controller.update_boolean('hide_statusbar', state)
 
     def on_save(self):
         self.controller.apply_settings()
