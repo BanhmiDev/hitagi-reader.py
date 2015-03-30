@@ -109,6 +109,10 @@ QPushButton {
     padding: 4px;
 }
 
+QPushButton:disabled {
+    background: #A0C1C1;
+}
+
 QLineEdit {
     border-radius: 1px;
     border: 1px solid #ccc;

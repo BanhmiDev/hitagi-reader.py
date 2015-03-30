@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-import time, io, traceback
+import time, io, traceback, sys
 
 from PyQt5.QtCore import Qt, QTranslator
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QSplashScreen, QMessageBox
 
 from hitagilib.model.app import AppModel
+from hitagilib.model.settings import SettingsModel
 from hitagilib.controller.main import MainController
 from hitagilib.view.MainView import MainView
 
@@ -51,9 +52,6 @@ def excepthook(exception_type, exception_value, traceback_obj):
     error_box.exec_()
 
 def run():
-    import sys
-    from hitagilib.model.settings import SettingsModel
-
     # Global exceptions
     sys.excepthook = excepthook
 
@@ -67,9 +65,11 @@ def run():
     app.processEvents()
 
     # Load translation
-    translator = QTranslator()
-    translator.load('localization/' + SettingsModel().get('Language', 'code') + '.qm')
-    app.installTranslator(translator)
+    locale_code = SettingsModel().get('Language', 'code')
+    if locale_code != "en_US": # Standard language
+        translator = QTranslator()
+        translator.load('localization/' + locale_code + '.qm')
+        app.installTranslator(translator)
 
     # Start
     m = Hitagi()

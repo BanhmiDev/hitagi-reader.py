@@ -43,20 +43,15 @@ class SettingsController(object):
             self.model.set('Viewport', 'selection', str(index))
             self.model.announce_update()
 
+    def update_locale(self, index):
+        if index >= 0:
+            locale_code = self.model.get_locale_code(index)
+            self.model.set('Language', 'code', locale_code)
+            self.model.announce_update()
+
     def load_defaults(self):
         """Load defaults."""
-        defaults = """
-        [Hotkeys]
-        Exit = Ctrl+X
-        Fullscreen = F
-        Directory = D
-        Next = Right
-        Previous = Left
-        Zoom in = Ctrl++
-        Zoom out = Ctrl+-
-        Zoom original = Ctrl+0
-        """
-        self.model.read_string(defaults)
+        self.model.read_string(self.model.defaults)
         self.model.announce_update()
 
     def apply_settings(self):
