@@ -109,6 +109,10 @@ QPushButton {
     padding: 4px;
 }
 
+QPushButton:hover {
+    background: #019696;
+}
+
 QPushButton:disabled {
     background: #A0C1C1;
 }

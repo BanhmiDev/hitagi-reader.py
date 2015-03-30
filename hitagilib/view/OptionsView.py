@@ -45,6 +45,9 @@ class OptionDialog(QDialog):
         self.ui.pushButton_assign_hotkey.clicked.connect(self.on_new_shortcut)
         self.ui.pushButton_reset.clicked.connect(self.controller.load_defaults)
 
+        # Select current language
+        self.ui.listWidget_locale.setCurrentRow(self.model.get_locale_code_index(self.model.get('Language', 'code')))
+
     def generate_checkbox_list(self):
         self.ui.checkBox_check_updates.setChecked(self.model.get('Misc', 'check_updates') == 'True')
         self.ui.checkBox_hide_menubar.setChecked(self.model.get('Misc', 'hide_menubar') == 'True')

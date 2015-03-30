@@ -7,6 +7,7 @@ class SettingsModel(ConfigParser):
         ConfigParser.__init__(self)
         self.optionxform = str
         self.read('config.ini', encoding='utf-8')
+
         self.defaults = """
         [Hotkeys]
         Exit = Ctrl+X
@@ -18,6 +19,8 @@ class SettingsModel(ConfigParser):
         Zoom out = Ctrl+-
         Zoom original = Ctrl+0
         """
+        
+        self.locale_code = ['en_US', 'de_DE', 'ja_JP', 'vi_VN']
         self._update_funcs = []
 
     def subscribe_update_func(self, func):
@@ -37,8 +40,10 @@ class SettingsModel(ConfigParser):
 
     def get_locale_code(self, index):
         """Get locale code by index."""
-        locale_code = ['en_US', 'de_DE', 'ja_JP', 'vi_VN']
-        return locale_code[index]
+        return self.locale_code[index]
+
+    def get_locale_code_index(self, code):
+        return self.locale_code.index(code)
 
     def apply_settings(self):
         """Write settings to file."""
