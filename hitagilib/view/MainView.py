@@ -1,16 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import webbrowser
 
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView
 
-from resources.hitagi import Ui_Hitagi
+from hitagilib.ui.hitagi import Ui_Hitagi
 
-from model.settings import SettingsModel
-from model.favorites import FavoritesModel
-from controller.canvas import CanvasController
-from controller.main import MainController
+from hitagilib.model.settings import SettingsModel
+from hitagilib.model.favorites import FavoritesModel
+from hitagilib.controller.canvas import CanvasController
+from hitagilib.controller.main import MainController
 
 class MainView(QMainWindow):
 
@@ -174,8 +174,8 @@ class MainView(QMainWindow):
 
     # File menu
     def on_set_as_wallpaper(self):
-        from view.WallpaperView import WallpaperDialog
-        from controller.wallpaper import WallpaperController
+        from hitagilib.view.WallpaperView import WallpaperDialog
+        from hitagilib.controller.wallpaper import WallpaperController
 
         _image = self.model.get_image()
         if _image is not None:
@@ -191,7 +191,7 @@ class MainView(QMainWindow):
         subprocess.Popen(r'explorer /select,' + self.model.get_image_path())
 
     def on_options(self):
-        from view.OptionsView import OptionDialog
+        from hitagilib.view.OptionsView import OptionDialog
         self.dialog = OptionDialog(self)
         self.dialog.show()
 
@@ -252,7 +252,7 @@ class MainView(QMainWindow):
         webbrowser.open('https://gimu.org/hitagi-reader/docs')
 
     def on_about(self):
-        from view.AboutView import AboutDialog
+        from hitagilib.view.AboutView import AboutDialog
         dialog = AboutDialog(self, None, None)
         dialog.show()
 

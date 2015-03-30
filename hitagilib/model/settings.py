@@ -1,7 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from configparser import ConfigParser
-
-from PyQt5 import QtGui, QtWidgets
 
 class SettingsModel(ConfigParser):
 

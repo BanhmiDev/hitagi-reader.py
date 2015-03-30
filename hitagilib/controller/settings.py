@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QColorDialog, QFileDialog
 

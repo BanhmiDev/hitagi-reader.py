@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
 
-from model.settings import SettingsModel
+from hitagilib.model.settings import SettingsModel
 
 class FavoritesModel(object):
 

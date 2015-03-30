@@ -14,7 +14,7 @@ class Ui_Hitagi(object):
         Hitagi.resize(780, 641)
         Hitagi.setMinimumSize(QtCore.QSize(0, 0))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("icon.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/resources/icon.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Hitagi.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(Hitagi)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -191,7 +191,6 @@ class Ui_Hitagi(object):
         self.actionAbout.setText(_translate("Hitagi", "About Hitagi"))
         self.actionSet_as_wallpaper.setText(_translate("Hitagi", "Set as wallpaper..."))
         self.actionOpen_current_directory.setText(_translate("Hitagi", "Open current directory..."))
-        self.actionOpen_current_directory.setStatusTip(_translate("Hitagi", "Open the current directory"))
         self.actionCopy_to_clipboard.setText(_translate("Hitagi", "Copy to clipboard..."))
         self.actionFit_image_width.setText(_translate("Hitagi", "Fit to width"))
         self.actionFit_image_height.setText(_translate("Hitagi", "Fit to height"))
@@ -202,3 +201,4 @@ class Ui_Hitagi(object):
         self.actionAdd_to_favorites.setText(_translate("Hitagi", "Add to favorites"))
         self.actionRemove_from_favorites.setText(_translate("Hitagi", "Remove from favorites"))
 
+from resources import hitagi_rc

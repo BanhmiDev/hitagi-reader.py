@@ -1,13 +1,13 @@
-#!/usr/bin/env python
-from PyQt5.QtCore import Qt
+#!/usr/bin/env python3
+import time, io, traceback
+
+from PyQt5.QtCore import Qt, QTranslator
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QSplashScreen, QMessageBox
 
-from model.app import AppModel
-from controller.main import MainController
-from view.MainView import MainView
-
-import time, io, traceback
+from hitagilib.model.app import AppModel
+from hitagilib.controller.main import MainController
+from hitagilib.view.MainView import MainView
 
 class Hitagi(QMainWindow):
     def __init__(self):
@@ -22,8 +22,8 @@ def excepthook(exception_type, exception_value, traceback_obj):
     separator = '-' * 80
     logFile = "error.log"
     notice = \
-        """An unhandled exception occurred. Please report the problem\n"""\
-        """using GitHub Issues <https://github.com/gimu/hitagi-reader> or via email to <mail@gimu.org>."""\
+        """An unhandled exception occurred. Please report the problem using\n"""\
+        """GitHub Issues <https://github.com/gimu/hitagi-reader> or via email <mail@gimu.org>."""\
         """\n\n\nError information:\n"""
     time_string = time.strftime("%Y-%m-%d, %H:%M:%S")
     tbinfofile = io.StringIO()
@@ -50,8 +50,9 @@ def excepthook(exception_type, exception_value, traceback_obj):
     error_box.setText(str(notice) + str(msg))
     error_box.exec_()
 
-if __name__ == "__main__":
+def run():
     import sys
+    from hitagilib.model.settings import SettingsModel
 
     # Global exceptions
     sys.excepthook = excepthook
@@ -64,6 +65,11 @@ if __name__ == "__main__":
     splash.setMask(splash_pix.mask())
     splash.show()
     app.processEvents()
+
+    # Load translation
+    translator = QTranslator()
+    translator.load('localization/' + SettingsModel().get('Language', 'code') + '.qm')
+    app.installTranslator(translator)
 
     # Start
     m = Hitagi()

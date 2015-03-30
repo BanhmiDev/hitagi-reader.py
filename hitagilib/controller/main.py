@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from pathlib import Path
 
 from PyQt5.QtGui import QImage, QClipboard
 from PyQt5.QtWidgets import QFileDialog
 
-from model.settings import SettingsModel
-from model.favorites import FavoritesModel
-from controller.canvas import CanvasController
+from hitagilib.model.settings import SettingsModel
+from hitagilib.model.favorites import FavoritesModel
+from hitagilib.controller.canvas import CanvasController
 
 class MainController(object):
 

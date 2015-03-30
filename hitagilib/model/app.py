@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, QDir, Qt
 from PyQt5.QtGui import QFont, QIcon, QImage, QClipboard
 from PyQt5.QtWidgets import QApplication, QFileSystemModel, QMessageBox
 
-from model.canvas import CanvasModel
+from hitagilib.model.canvas import CanvasModel
 
 class AppModel(object):
 

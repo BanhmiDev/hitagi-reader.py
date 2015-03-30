@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from PyQt5.QtWidgets import QDialog
 
-from resources.about import Ui_Dialog
+from hitagilib.ui.about import Ui_Dialog
 
 class AboutDialog(QDialog):
 

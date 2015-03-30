@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QDialog, QListWidgetItem, QKeySequenceEdit
 from PyQt5.QtCore import Qt, pyqtSlot
 
-from model.settings import SettingsModel
-from controller.settings import SettingsController
+from hitagilib.model.settings import SettingsModel
+from hitagilib.controller.settings import SettingsController
 
-from resources.options import Ui_Dialog
+from hitagilib.ui.options import Ui_Dialog
 
 class OptionDialog(QDialog):
 

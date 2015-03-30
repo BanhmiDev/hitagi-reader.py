@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from PyQt5.QtCore import Qt
 
 class CanvasController(object):
