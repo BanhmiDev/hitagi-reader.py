@@ -1,3 +1,4 @@
 /dev
+error.log
 __pycache__/
 *.pyc
