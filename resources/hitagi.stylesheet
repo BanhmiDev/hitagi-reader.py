@@ -124,3 +124,80 @@ QLineEdit {
     background: #FFFFFF;
     selection-background-color: darkgray;
 }
+
+/* Scrollbars */
+QScrollBar:horizontal {
+    border: none;
+    background: #232323;
+    width: 7px;
+    margin: 22px 0 22px 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: #00A4A4;
+    min-height: 0px;
+}
+
+QScrollBar::add-line:horizontal {
+    border: none;
+    background: #232323;
+    height: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: none;
+    background: #232323;
+    height: 20px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
+    border: none;
+    width: 0px;
+    height: 0px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: #232323;
+    width: 7px;
+    margin: 22px 0 22px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #00A4A4;
+    min-height: 0px;
+}
+
+QScrollBar::add-line:vertical {
+    border: none;
+    background: #232323;
+    height: 20px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: #232323;
+    height: 20px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+    border: none;
+    width: 0px;
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
