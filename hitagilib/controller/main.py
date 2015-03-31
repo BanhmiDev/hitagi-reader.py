@@ -36,6 +36,9 @@ class MainController(object):
         self.model.directory = new_directory
         self.model.announce_update()
 
+    def check_favorites(self, directory):
+        return self.favorites.check_favorites(directory)
+
     def add_to_favorites(self):
         """Favorite current directory."""
         self.favorites.add(str(self.model.directory))
@@ -76,4 +79,32 @@ class MainController(object):
         """Open current image to clipboard."""
         if self.model.image_path is not None:
             self.model.clipboard.setImage(self.model.get_image(), QClipboard.Clipboard)
+
+    def open_in_explorer(self):
+        """Open current directory in an explorer environment."""
+        import os, subprocess
+        path = self.model.get_directory()
+
+        # Todo: let user choose his filemanager?
+        if path is not None:
+            if os.name == 'nt': # Windows
+                try:
+                    subprocess.Popen(r'explorer /select,' + path)
+                except:
+                    pass
+            else: # Other OS
+                try:
+                    return subprocess.call(['thunar', path])
+                except:
+                    pass
+                try:
+                    return subprocess.call(['nautilus', path])
+                except:
+                    pass
+                try:
+                    return subprocess.call(['xfe', path])
+                except:
+                    pass
+
+            self.show_explorer_error()
         

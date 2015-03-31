@@ -15,7 +15,7 @@ class FavoritesModel(object):
             self.add(self.settings.get('Favorites', option))
 
     def add(self, path):
-        if path not in self.favorites:
+        if path and path not in self.favorites:
             self.favorites.append(path)
 
     def remove(self, path):
@@ -24,6 +24,12 @@ class FavoritesModel(object):
 
     def items(self):
         return self.favorites
+
+    def check_favorites(self, directory):
+        if directory in self.favorites:
+            return True
+        else:
+            return False
 
     def save(self):
         self.settings.remove_section('Favorites')

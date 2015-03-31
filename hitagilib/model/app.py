@@ -39,4 +39,7 @@ class AppModel(object):
         return None if image.isNull() else image
 
     def get_image_path(self):
-        return str(self.image_paths[self.image_index]) if self.image_index > -1 else None
+        return self.image_path
+
+    def get_directory(self):
+        return self.directory

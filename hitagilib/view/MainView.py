@@ -3,7 +3,7 @@ import webbrowser
 
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
-from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView, QShortcut
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView, QShortcut, QMessageBox
 
 from hitagilib.ui.hitagi import Ui_Hitagi
 
@@ -83,7 +83,7 @@ class MainView(QMainWindow):
         self.ui.treeView.clicked.connect(self.on_dir_list_clicked)
         # Open parent
         self.ui.pushButton_open_parent.clicked.connect(self.on_open_parent)
-        self.ui.pushButton_favorite.clicked.connect(self.on_add_to_favorites)
+        self.ui.pushButton_favorite.clicked.connect(self.on_manage_favorite)
 
         # Shortcuts
         _translate = QCoreApplication.translate
@@ -142,13 +142,16 @@ class MainView(QMainWindow):
         # Update directory path
         self.model.directory = self.file_model.filePath(parent_index)
 
+        self.update_ui_from_model()
+
     def on_dir_list_activated(self, index):
-        if self.file_model.hasChildren(index) is not False:
+        if self.file_model.isDir(index) is not False:
             self.file_model.setRootPath(self.file_model.filePath(index))
             self.ui.treeView.setRootIndex(index)
 
             # Save current path
             self.model.directory = self.file_model.filePath(index)
+            self.update_ui_from_model()
         
     def on_dir_list_clicked(self, index):
         self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
@@ -167,9 +170,7 @@ class MainView(QMainWindow):
         self.main_controller.copy_to_clipboard()
 
     def on_current_dir(self):
-        import subprocess
-        # Windows
-        subprocess.Popen(r'explorer /select,' + self.model.get_image_path())
+        self.main_controller.open_in_explorer()
 
     def on_options(self):
         from hitagilib.view.OptionsView import OptionDialog
@@ -201,14 +202,14 @@ class MainView(QMainWindow):
     def on_zoom_out(self):
         self.canvas_controller.scale_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 0.9)
 
-    def on_zoom_original(self):
-        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
-
     def on_scale_image_to_width(self):
         self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1)
 
     def on_scale_image_to_height(self):
         self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 2)
+
+    def on_zoom_original(self):
+        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
 
     def on_toggle_filelist(self):
         if self.ui.actionFile_list.isChecked():
@@ -219,14 +220,23 @@ class MainView(QMainWindow):
     def on_fullscreen(self):
         self.main_controller.toggle_fullscreen()
 
+    # Favorite button
+    def on_manage_favorite(self):
+        if self.main_controller.check_favorites(self.model.directory):
+            self.on_remove_from_favorites()
+        else:
+            self.on_add_to_favorites()
+
     # Favorite menu
     def on_add_to_favorites(self):
         self.main_controller.add_to_favorites()
         self.load_favorites()
+        self.update_ui_from_model()
 
     def on_remove_from_favorites(self):
         self.main_controller.remove_from_favorites()
         self.load_favorites()
+        self.update_ui_from_model()
 
     # Help menu
     def on_changelog(self):
@@ -237,6 +247,12 @@ class MainView(QMainWindow):
         dialog = AboutDialog(self, None, None)
         dialog.show()
 
+    def show_explorer_error(self):
+        notify = QMessageBox()
+        notify.setWindowTitle("Error")
+        notify.setText("Couldn't open the current directory with an appropriate filemanager!")
+        notify.exec_()
+
     def update_ui_from_model(self):
         """Update UI from model."""
         self.settings = SettingsModel()
@@ -245,6 +261,13 @@ class MainView(QMainWindow):
         self.file_model.setRootPath(self.model.directory)
         self.ui.treeView.setRootIndex(self.file_model.index(self.model.directory))
 
+        # Update favorite button
+        if self.main_controller.check_favorites(self.model.directory):
+            self.ui.pushButton_favorite.setText("Unfavorite")
+        else:
+            self.ui.pushButton_favorite.setText("Favorite")
+
+        # Canvas update
         self.ui.graphicsView.setScene(self.canvas.scene)
 
         # Fullscreen mode switching

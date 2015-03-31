@@ -1,7 +1,6 @@
 #!/usr/bin/env python
+import os, subprocess
 from PyQt5.QtCore import QStandardPaths
-
-import os
 
 class WallpaperController(object):
 
@@ -12,8 +11,9 @@ class WallpaperController(object):
         """Set current image as wallpaper."""
         if self.model.image_path is not None:
             path = QStandardPaths.writableLocation(QStandardPaths.TempLocation)
-            self.model.get_image().save(path + "/test.bmp")
-            subprocess.call(('feh', '--bg-fill', selectedImage))
+            print(path)
+            tmp_image = self.model.get_image().save(path + "/hr_wallpaper.bmp")
+            subprocess.call(('feh', '--bg-fill', path + "/hr_wallpaper.bmp"))
 
         """windows
         import win32api, win32con, win32gui
