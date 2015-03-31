@@ -65,6 +65,9 @@ class MainController(object):
     def open_image(self, container_width, container_height, path):
         """Open specific image via path."""
         image = QImage(str(path))
+        if image.isNull():
+            image = None
+            
         self.model.image_path = path
         self.canvas.update_image(container_width, container_height, image, self.settings.getint('Viewport', 'selection'))
         self.model.announce_update()

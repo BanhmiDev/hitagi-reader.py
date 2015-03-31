@@ -3,7 +3,7 @@ import webbrowser
 
 from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
-from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView
+from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView, QShortcut
 
 from hitagilib.ui.hitagi import Ui_Hitagi
 
@@ -82,8 +82,8 @@ class MainView(QMainWindow):
         # Update file list
         self.ui.treeView.clicked.connect(self.on_dir_list_clicked)
         # Open parent
-        self.ui.button_open_parent.clicked.connect(self.on_open_parent)
-        self.ui.button_favorite.clicked.connect(self.on_add_to_favorites)
+        self.ui.pushButton_open_parent.clicked.connect(self.on_open_parent)
+        self.ui.pushButton_favorite.clicked.connect(self.on_add_to_favorites)
 
         # Shortcuts
         _translate = QCoreApplication.translate
@@ -100,12 +100,15 @@ class MainView(QMainWindow):
         self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom out')))
         self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom original')))
         self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fullscreen')))
-        
+
         # Load favorites in UI
         self.load_favorites()
 
         # Background
         self.ui.graphicsView.setBackgroundBrush(QBrush(QColor(self.settings.get('Look', 'background')), Qt.SolidPattern))
+
+        # Save current height for fullscreen mode
+        self.default_menubar_height = self.ui.menubar.height()
 
     def load_favorites(self):
         self.favorites = FavoritesModel()
@@ -130,28 +133,6 @@ class MainView(QMainWindow):
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape and self.model.is_fullscreen:
             self.main_controller.toggle_fullscreen()
-
-        # Redefine shortcuts when hiding menubar
-        if self.model.is_fullscreen and self.settings.get('Misc', 'hide_menubar') == "True":
-            print("jo")
-            print(QKeySequence(self.settings.get('Hotkeys', 'Zoom in')))
-            if e.key() == QKeySequence(self.settings.get('Hotkeys', 'Exit')):
-                self.on_close()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Next')):
-                self.on_next_item()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Previous')):
-                self.on_previous_item()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Directory')):
-                self.on_change_directory()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom in')):
-                print("Ok")
-                self.on_zoom_in()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom out')):
-                self.on_zoom_out()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Zoom original')):
-                self.on_zoom_original()
-            elif e.key() == QKeySequence(self.settings.get('Hotkeys', 'Fullscreen')):
-                self.main_controller.toggle_fullscreen()
 
     def on_open_parent(self):
         parent_index = self.file_model.parent(self.file_model.index(self.file_model.rootPath()))
@@ -270,8 +251,8 @@ class MainView(QMainWindow):
         if self.model.is_fullscreen:
             self.showFullScreen()
             if self.settings.get('Misc', 'hide_menubar') == 'True':
-                self.ui.menubar.hide()
+                self.ui.menubar.setMaximumHeight(0) # Workaround to preserve shortcuts
         else:
             self.showNormal()
             if self.settings.get('Misc', 'hide_menubar') == 'True':
-                self.ui.menubar.show()
+                self.ui.menubar.setMaximumHeight(self.default_menubar_height)
