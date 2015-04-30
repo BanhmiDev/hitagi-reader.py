@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import webbrowser
 
-from PyQt5.QtCore import QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
+from PyQt5.QtCore import QTimer, QThread, QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView, QShortcut, QMessageBox
 
 from hitagilib.ui.hitagi import Ui_Hitagi
 
 from hitagilib.model.settings import SettingsModel
+from hitagilib.model.slideshow import SlideshowModel
 from hitagilib.model.favorites import FavoritesModel
 from hitagilib.controller.canvas import CanvasController
 from hitagilib.controller.main import MainController
@@ -16,6 +17,9 @@ class MainView(QMainWindow):
 
     def __init__(self, model, controller):
         self.settings = SettingsModel()
+        self.slideshow = SlideshowModel()
+        self.slideshow.updateSignal.connect(self.on_next_item)
+
         self.model = model
         self.canvas = self.model.canvas
         self.main_controller = controller
@@ -37,10 +41,11 @@ class MainView(QMainWindow):
         self.ui.actionOptions.triggered.connect(self.on_options)
         self.ui.actionExit.triggered.connect(self.on_close)
 
-        # Folder menu
+        # Folder menu 
         self.ui.actionOpen_next.triggered.connect(self.on_next_item)
         self.ui.actionOpen_previous.triggered.connect(self.on_previous_item)
         self.ui.actionChange_directory.triggered.connect(self.on_change_directory)
+        self.ui.actionSlideshow.triggered.connect(self.on_slideshow)
 
         # View menu
         self.ui.actionZoom_in.triggered.connect(self.on_zoom_in)
@@ -92,9 +97,9 @@ class MainView(QMainWindow):
         self.ui.actionOpen_next.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Next')))
         self.ui.actionOpen_previous.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Previous')))
         self.ui.actionChange_directory.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Directory')))
-
         self.ui.actionAdd_to_favorites.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Add to favorites')))
         self.ui.actionRemove_from_favorites.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Remove from favorites')))
+        self.ui.actionSlideshow.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Slideshow')))
 
         self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom in')))
         self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom out')))
@@ -178,6 +183,8 @@ class MainView(QMainWindow):
         self.dialog.show()
 
     def on_close(self):
+        if self.slideshow.isRunning():
+            self.slideshow.exit()
         self.close()
 
     # Folder menu
@@ -191,11 +198,18 @@ class MainView(QMainWindow):
         self.ui.treeView.setCurrentIndex(index)
         self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
 
+    def on_slideshow(self):
+        if self.ui.actionSlideshow.isChecked():
+            self.slideshow.start()
+            self.slideshow.is_running = True
+        else:
+            self.slideshow.is_running = False
+            self.slideshow.exit()
+
     def on_change_directory(self):
         self.main_controller.change_directory()
 
     # View menu
-    # See controller/canvas.py for last parameter meaning
     def on_zoom_in(self):
         self.canvas_controller.scale_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1.1)
 
