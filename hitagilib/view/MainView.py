@@ -51,6 +51,9 @@ class MainView(QMainWindow):
         self.ui.actionZoom_in.triggered.connect(self.on_zoom_in)
         self.ui.actionZoom_out.triggered.connect(self.on_zoom_out)
         self.ui.actionOriginal_size.triggered.connect(self.on_zoom_original)
+        self.ui.actionRotate_clockwise.triggered.connect(self.on_rotate_clockwise)
+        self.ui.actionFlip_horizontally.triggered.connect(self.on_flip_horizontal)
+        self.ui.actionFlip_vertically.triggered.connect(self.on_flip_vertical)
         self.ui.actionFit_image_width.triggered.connect(self.on_scale_image_to_width)
         self.ui.actionFit_image_height.triggered.connect(self.on_scale_image_to_height)
         self.ui.actionFile_list.triggered.connect(self.on_toggle_filelist)
@@ -104,6 +107,11 @@ class MainView(QMainWindow):
         self.ui.actionZoom_in.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom in')))
         self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom out')))
         self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom original')))
+        self.ui.actionRotate_clockwise.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Rotate clockwise')))
+        self.ui.actionFlip_horizontally.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Flip horizontal')))
+        self.ui.actionFlip_vertically.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Flip vertical')))
+        self.ui.actionFit_image_width.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fit to width')))
+        self.ui.actionFit_image_height.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fit to height')))
         self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fullscreen')))
 
         # Load favorites in UI
@@ -129,11 +137,18 @@ class MainView(QMainWindow):
         center_point = QDesktopWidget().availableGeometry().center()
         ui_geometry.moveCenter(center_point)
         self.move(ui_geometry.topLeft())
+   
+    # On show
+    def showEvent(self, e):
+        # Initialize container geometry to canvas
+        self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
 
     # On resize
     def resizeEvent(self, resizeEvent):
-        self.main_controller.update_canvas(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image())
-
+        # Pass new geometry to canvas
+        self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        self.main_controller.update_canvas(self.model.get_image())
+        
     # Additional static shortcuts
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape and self.model.is_fullscreen:
@@ -159,7 +174,7 @@ class MainView(QMainWindow):
             self.update_ui_from_model()
         
     def on_dir_list_clicked(self, index):
-        self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
+        self.main_controller.open_image(self.file_model.filePath(index))
 
     # File menu
     def on_set_as_wallpaper(self):
@@ -191,12 +206,12 @@ class MainView(QMainWindow):
     def on_next_item(self):
         index = self.ui.treeView.moveCursor(QAbstractItemView.MoveDown, Qt.NoModifier)
         self.ui.treeView.setCurrentIndex(index)
-        self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
+        self.main_controller.open_image(self.file_model.filePath(index))
 
     def on_previous_item(self):
         index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
         self.ui.treeView.setCurrentIndex(index)
-        self.main_controller.open_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.file_model.filePath(index))
+        self.main_controller.open_image(self.file_model.filePath(index))
 
     def on_slideshow(self):
         if self.ui.actionSlideshow.isChecked():
@@ -211,19 +226,28 @@ class MainView(QMainWindow):
 
     # View menu
     def on_zoom_in(self):
-        self.canvas_controller.scale_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1.1)
+        self.canvas_controller.scale_image(1.1)
 
     def on_zoom_out(self):
-        self.canvas_controller.scale_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 0.9)
+        self.canvas_controller.scale_image(0.9)
+    
+    def on_rotate_clockwise(self):
+        self.canvas_controller.rotate_image()
+
+    def on_flip_horizontal(self):
+        self.canvas_controller.flip_image(0)
+
+    def on_flip_vertical(self):
+        self.canvas_controller.flip_image(1)
 
     def on_scale_image_to_width(self):
-        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 1)
+        self.canvas_controller.update_image(1)
 
     def on_scale_image_to_height(self):
-        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 2)
+        self.canvas_controller.update_image(2)
 
     def on_zoom_original(self):
-        self.canvas_controller.update_image(self.ui.graphicsView.width(), self.ui.graphicsView.height(), self.model.get_image(), 3)
+        self.canvas_controller.update_image(3)
 
     def on_toggle_filelist(self):
         if self.ui.actionFile_list.isChecked():

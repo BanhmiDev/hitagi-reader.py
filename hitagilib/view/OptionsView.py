@@ -91,7 +91,7 @@ class OptionDialog(QDialog):
         self.controller.update_boolean('hide_menubar', state)
 
     @pyqtSlot(int)
-    def on_comboBox_currentIndexChanged(self, index):
+    def on_comboBox_default_viewport_currentIndexChanged(self, index):
         self.controller.update_viewport_behaviour(index)
 
     @pyqtSlot(int)

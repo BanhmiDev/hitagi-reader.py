@@ -59,20 +59,19 @@ class MainController(object):
         # Update UI
         self.model.announce_update()
 
-    # Todo: remove/replace with canvas controller function
-    def update_canvas(self, container_width, container_height, image = None):
+    def update_canvas(self, image = None):
         """Update canvas with image."""
-        self.canvas.update_image(container_width, container_height, image, self.settings.getint('Viewport', 'selection'))
+        self.canvas.update_image(self.settings.getint('Viewport', 'selection'), image)
         self.model.announce_update()
 
-    def open_image(self, container_width, container_height, path):
+    def open_image(self, path):
         """Open specific image via path."""
         image = QImage(str(path))
         if image.isNull():
             image = None
             
         self.model.image_path = path
-        self.canvas.update_image(container_width, container_height, image, self.settings.getint('Viewport', 'selection'))
+        self.canvas.update_image(self.settings.getint('Viewport', 'selection'), image)
         self.model.announce_update()
 
     def copy_to_clipboard(self):
