@@ -21,11 +21,11 @@ class Hitagi(QMainWindow):
 def excepthook(exception_type, exception_value, traceback_obj):
     """Global function to catch unhandled exceptions."""
     separator = '-' * 80
-    logFile = "error.log"
     notice = \
-        """An unhandled exception occurred. Please report the problem using\n"""\
-        """GitHub Issues <https://github.com/gimu/hitagi-reader> or via email <mail@gimu.org>."""\
-        """\n\n\nError information:\n"""
+        """An unhandled exception occurred. Please report this error using\n"""\
+        """GitHub Issues <https://github.com/gimu/hitagi-reader/issues>."""\
+        """\n\nException saved in error.log"""\
+        """\n\nError information:\n"""
     time_string = time.strftime("%Y-%m-%d, %H:%M:%S")
     tbinfofile = io.StringIO()
     traceback.print_tb(traceback_obj, None, tbinfofile)
@@ -39,7 +39,7 @@ def excepthook(exception_type, exception_value, traceback_obj):
     # Combine and write to file
     msg = '\n'.join(sections)
     try:
-        f = open(logFile, "w")
+        f = open("error.log", "w")
         f.write(msg)
         f.close()
     except IOError:

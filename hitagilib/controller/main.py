@@ -72,7 +72,6 @@ class MainController(object):
             
         self.model.image_path = path
         self.canvas.update_image(self.settings.getint('Viewport', 'selection'), image)
-        self.model.announce_update()
 
     def copy_to_clipboard(self):
         """Open current image to clipboard."""

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'hitagi.ui'
 #
-# Created by: PyQt5 UI code generator 5.4.1
+# Created by: PyQt5 UI code generator 5.4.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -37,9 +37,13 @@ class Ui_Hitagi(object):
         self.graphicsView.setFrameShadow(QtWidgets.QFrame.Plain)
         self.graphicsView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.graphicsView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.graphicsView.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.graphicsView.setInteractive(True)
         self.graphicsView.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
         self.graphicsView.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.graphicsView.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.graphicsView.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.graphicsView.setViewportUpdateMode(QtWidgets.QGraphicsView.SmartViewportUpdate)
         self.graphicsView.setObjectName("graphicsView")
         self.verticalLayout.addWidget(self.graphicsView)
         Hitagi.setCentralWidget(self.centralwidget)
@@ -145,7 +149,6 @@ class Ui_Hitagi(object):
         self.actionFlip_vertically.setObjectName("actionFlip_vertically")
         self.actionUpload_to = QtWidgets.QAction(Hitagi)
         self.actionUpload_to.setObjectName("actionUpload_to")
-        self.menuExit.addAction(self.actionUpload_to)
         self.menuExit.addAction(self.actionSet_as_wallpaper)
         self.menuExit.addAction(self.actionCopy_to_clipboard)
         self.menuExit.addAction(self.actionOpen_current_directory)
@@ -228,4 +231,3 @@ class Ui_Hitagi(object):
         self.actionFlip_vertically.setText(_translate("Hitagi", "Flip vertically"))
         self.actionUpload_to.setText(_translate("Hitagi", "Upload to..."))
 
-from resources import hitagi_rc

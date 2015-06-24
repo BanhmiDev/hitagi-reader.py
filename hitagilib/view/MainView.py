@@ -75,7 +75,7 @@ class MainView(QMainWindow):
         # File listing
         self.file_model = QFileSystemModel()
         self.file_model.setFilter(QDir.NoDotAndDotDot | QDir.AllDirs | QDir.Files)
-        self.file_model.setNameFilters(['*.gif', '*.jpeg', '*.jpg', '*.png'])
+        self.file_model.setNameFilters(['*.gif', '*.jpeg', '*.jpg', '*.png', '*.bmp'])
         self.file_model.setNameFilterDisables(False)
         self.file_model.setRootPath(self.settings.get('Directory', 'default'))
 
@@ -142,12 +142,13 @@ class MainView(QMainWindow):
     def showEvent(self, e):
         # Initialize container geometry to canvas
         self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        self.main_controller.update_canvas()
 
     # On resize
     def resizeEvent(self, resizeEvent):
         # Pass new geometry to canvas
         self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
-        self.main_controller.update_canvas(self.model.get_image())
+        #self.main_controller.update_canvas()
         
     # Additional static shortcuts
     def keyPressEvent(self, e):
@@ -181,9 +182,9 @@ class MainView(QMainWindow):
         from hitagilib.view.WallpaperView import WallpaperDialog
         from hitagilib.controller.wallpaper import WallpaperController
 
-        _image = self.model.get_image()
+        image = self.model.get_image()
         if _image is not None:
-            dialog = WallpaperDialog(self, None, WallpaperController(self.model), _image)
+            dialog = WallpaperDialog(self, None, WallpaperController(self.model), image)
             dialog.show()
 
     def on_clipboard(self):
@@ -257,6 +258,17 @@ class MainView(QMainWindow):
 
     def on_fullscreen(self):
         self.main_controller.toggle_fullscreen()
+        
+        if self.model.is_fullscreen:
+            self.showFullScreen()
+            if self.settings.get('Misc', 'hide_menubar') == 'True':
+                self.ui.menubar.setMaximumHeight(0) # Workaround to preserve shortcuts
+        else:
+            self.showNormal()
+            if self.settings.get('Misc', 'hide_menubar') == 'True':
+                self.ui.menubar.setMaximumHeight(self.default_menubar_height)
+        self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
+        self.main_controller.update_canvas()
 
     # Favorite button
     def on_manage_favorite(self):
@@ -278,7 +290,7 @@ class MainView(QMainWindow):
 
     # Help menu
     def on_changelog(self):
-        webbrowser.open('https://gimu.org/hitagi-reader/docs')
+        webbrowser.open('https://github.com/gimu/hitagi-reader/releases')
 
     def on_about(self):
         from hitagilib.view.AboutView import AboutDialog
@@ -307,13 +319,3 @@ class MainView(QMainWindow):
 
         # Canvas update
         self.ui.graphicsView.setScene(self.canvas.scene)
-
-        # Fullscreen mode switching
-        if self.model.is_fullscreen:
-            self.showFullScreen()
-            if self.settings.get('Misc', 'hide_menubar') == 'True':
-                self.ui.menubar.setMaximumHeight(0) # Workaround to preserve shortcuts
-        else:
-            self.showNormal()
-            if self.settings.get('Misc', 'hide_menubar') == 'True':
-                self.ui.menubar.setMaximumHeight(self.default_menubar_height)
