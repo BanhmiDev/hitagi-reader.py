@@ -139,6 +139,7 @@ class Ui_Dialog(object):
         self.label_4.setObjectName("label_4")
         self.verticalLayout_5.addWidget(self.label_4)
         self.horizontalSlider_speed_slideshow = QtWidgets.QSlider(self.groupBox_6)
+        self.horizontalSlider_speed_slideshow.setMinimum(1)
         self.horizontalSlider_speed_slideshow.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_speed_slideshow.setObjectName("horizontalSlider_speed_slideshow")
         self.verticalLayout_5.addWidget(self.horizontalSlider_speed_slideshow)

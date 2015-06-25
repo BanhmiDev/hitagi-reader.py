@@ -44,7 +44,7 @@ class SettingsController(object):
             self.model.announce_update()
 
     def update_slideshow_speed(self, value):
-        if value >= 0:
+        if value >= 1:
             self.model.set('Slideshow', 'speed', str(value))
             self.model.announce_update()
             

@@ -7,7 +7,6 @@ from hitagilib.model.settings import SettingsModel
 
 class SlideshowModel(QThread):
     updateSignal = pyqtSignal()
-    restartSignal = pyqtSignal()
 
     def __init__(self):
         QThread.__init__(self)

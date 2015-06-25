@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import webbrowser
+from random import randint
 
 from PyQt5.QtCore import QDir, Qt, QModelIndex, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
@@ -220,22 +221,36 @@ class MainView(QMainWindow):
     # Folder menu
     def on_next_item(self):
         current_index = self.ui.treeView.currentIndex()
-        # Slideshow function - determine if we are at the end of our file list
-        if self.slideshow.is_running and not self.ui.treeView.indexBelow(current_index).isValid():
+        
+        # Slideshow restart - determine if we are at the end of our file list
+        if self.slideshow.is_running and self.settings.get('Slideshow', 'restart') == 'True' and not self.ui.treeView.indexBelow(current_index).isValid():
             self.main_controller.open_image(self.file_model.filePath(current_index))
             self.on_slideshow_restart(0) # Restart slideshow
-        else: # Scroll down
+        elif self.slideshow.is_running and self.settings.get('Slideshow', 'random') == 'True':
+            # Random index - moveCursor expects constants @http://doc.qt.io/qt-5/qabstractitemview.html#CursorAction-enum
+            index = self.ui.treeView.moveCursor(randint(0,9), Qt.NoModifier)
+            self.ui.treeView.setCurrentIndex(index)
+            self.main_controller.open_image(self.file_model.filePath(index))
+        else:
+            # Proceed normally, scroll down
             index = self.ui.treeView.moveCursor(QAbstractItemView.MoveDown, Qt.NoModifier)
             self.ui.treeView.setCurrentIndex(index)
             self.main_controller.open_image(self.file_model.filePath(index))
 
     def on_previous_item(self):
         current_index = self.ui.treeView.currentIndex()
-        # Slideshow function (reverse) - determine if we are the the top of our file list
-        if self.slideshow.is_running and not self.ui.treeView.indexAbove(current_index).isValid():
+        
+        # Slideshow restart (reverse) - determine if we are the the top of our file list
+        if self.slideshow.is_running and self.settings.get('Slideshow', 'restart') == 'True' and not self.ui.treeView.indexAbove(current_index).isValid():
             self.main_controller.open_image(self.file_model.filePath(current_index))
             self.on_slideshow_restart(1) # Restart slideshow
-        else: # Scroll up
+        elif self.slideshow.is_running and self.settings.get('Slideshow', 'random') == 'True':
+            # Random index
+            index = self.ui.treeView.moveCursor(randint(0,9), Qt.NoModifier)
+            self.ui.treeView.setCurrentIndex(index)
+            self.main_controller.open_image(self.file_model.filePath(index))
+        else:
+            # Proceed normally, scroll up
             index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
             self.ui.treeView.setCurrentIndex(index)
             self.main_controller.open_image(self.file_model.filePath(index))
@@ -249,7 +264,6 @@ class MainView(QMainWindow):
             self.slideshow.exit()
 
     def on_slideshow_restart(self, direction):
-        print("test")
         # 0: Restart from top to bottom
         # 1: Restart from bottom to top
         if direction == 0:
