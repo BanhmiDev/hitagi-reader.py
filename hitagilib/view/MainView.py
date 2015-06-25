@@ -183,7 +183,7 @@ class MainView(QMainWindow):
         from hitagilib.controller.wallpaper import WallpaperController
 
         image = self.model.get_image()
-        if _image is not None:
+        if image is not None:
             dialog = WallpaperDialog(self, None, WallpaperController(self.model), image)
             dialog.show()
 
@@ -300,7 +300,7 @@ class MainView(QMainWindow):
     def show_explorer_error(self):
         notify = QMessageBox()
         notify.setWindowTitle("Error")
-        notify.setText("Couldn't open the current directory with an appropriate filemanager!")
+        notify.setText(QCoreApplication.translate('Hitagi', "Couldn't open the current directory with an appropriate filemanager!"))
         notify.exec_()
 
     def update_ui_from_model(self):
@@ -313,9 +313,9 @@ class MainView(QMainWindow):
 
         # Update favorite button
         if self.main_controller.check_favorites(self.model.directory):
-            self.ui.pushButton_favorite.setText("Unfavorite")
+            self.ui.pushButton_favorite.setText(QCoreApplication.translate('Hitagi', "Unfavorite"))
         else:
-            self.ui.pushButton_favorite.setText("Favorite")
+            self.ui.pushButton_favorite.setText(QCoreApplication.translate('Hitagi', "Favorite"))
 
         # Canvas update
         self.ui.graphicsView.setScene(self.canvas.scene)

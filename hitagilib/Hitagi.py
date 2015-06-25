@@ -55,7 +55,7 @@ def run():
     # Global exceptions
     sys.excepthook = excepthook
 
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv) 
 
     # Splash screen
     splash_pix = QPixmap('resources/splash.jpg')
@@ -70,6 +70,10 @@ def run():
         translator = QTranslator()
         translator.load('localization/' + locale_code + '.qm')
         app.installTranslator(translator)
+
+        translator_2 = QTranslator()
+        translator_2.load('localization/' + locale_code + '_2.qm')
+        app.installTranslator(translator_2)
 
     # Start
     m = Hitagi()
