@@ -2,7 +2,7 @@
 import webbrowser
 from random import randint
 
-from PyQt5.QtCore import QDir, Qt, QModelIndex, QCoreApplication
+from PyQt5.QtCore import QDir, Qt, QModelIndex, QCoreApplication, pyqtSignal
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView, QShortcut, QMessageBox
 
@@ -16,6 +16,8 @@ from hitagilib.controller.main import MainController
 
 class MainView(QMainWindow):
 
+    resizeCompleted = pyqtSignal()
+
     def __init__(self, model, controller):
         self.settings = SettingsModel()
         self.slideshow = SlideshowModel()
@@ -28,14 +30,13 @@ class MainView(QMainWindow):
         self.build_ui()
         self.center_ui()
 
+        # Resize timer to prevent laggy updates
+        self.resize_timer = None
+        self.resizeCompleted.connect(self.resize_completed)
+
         # Slideshow
         if self.settings.get('Slideshow', 'reverse') == 'True':
             self.slideshow.updateSignal.connect(self.on_previous_item)
-            
-            #index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
-            index = self.ui.treeView.moveCursor(QAbstractItemView.MoveEnd, Qt.NoModifier)
-            self.ui.treeView.setCurrentIndex(index)
-            print("lel")
         else:
             self.slideshow.updateSignal.connect(self.on_next_item)
             
@@ -149,8 +150,8 @@ class MainView(QMainWindow):
         ui_geometry.moveCenter(center_point)
         self.move(ui_geometry.topLeft())
    
-    # On show
-    def showEvent(self, e):
+    # Qt show event
+    def showEvent(self, event):
         # Start in fullscreen mode according to settings
         if self.settings.get('Misc', 'fullscreen_mode') == 'True':
             self.on_fullscreen()
@@ -159,11 +160,27 @@ class MainView(QMainWindow):
         self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
         self.main_controller.update_canvas()
 
-    # On resize
-    def resizeEvent(self, resizeEvent):
-        # Pass new geometry to canvas
+    def update_resize_timer(self, interval=None):
+        if self.resize_timer is not None:
+            self.killTimer(self.resize_timer)
+        if interval is not None:
+            self.resize_timer = self.startTimer(interval)
+        else:
+            self.resize_timer = None
+
+    # Qt resize event
+    def resizeEvent(self, event):
+        self.update_resize_timer(300)
+
+    # Qt timer event
+    def timerEvent(self, event):
+        if event.timerId() == self.resize_timer:
+            self.update_resize_timer()
+            self.resizeCompleted.emit()
+
+    def resize_completed(self):
         self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
-        #self.main_controller.update_canvas()
+        self.main_controller.update_canvas()
         
     # Additional static shortcuts
     def keyPressEvent(self, e):
