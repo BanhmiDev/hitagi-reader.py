@@ -12,12 +12,13 @@ class CanvasController(object):
 
     def update_image(self, selection = 0, image = None):
         """Update image in canvas."""
-        self.canvas.set_image(image)
+        if image is not None: # Set image if available (most likely when opening an image)
+            self.canvas.set_image(image)
+            
         self.canvas.update_image(selection)
 
-    def scale_image(self, factor = 0, image = None):
+    def scale_image(self, factor = 0):
         """Scales image in canvas."""
-        self.canvas.set_image(image)
         self.canvas.scale_image(factor)
     
     def rotate_image(self):

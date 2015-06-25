@@ -61,7 +61,7 @@ class CanvasModel(object):
             self.scene.update()
 
     def rotate_image(self):
-        if self.image is not None:
+        if self.original_image is not None:
             # Rotate the original and viewable image to ensure a constant workflow when modifying from canvas
             matrix = QTransform()
             matrix.translate(self.image.width() / 2, self.image.height() / 2)
@@ -84,7 +84,7 @@ class CanvasModel(object):
             self.scene.update()
 
     def flip_image(self, direction):
-        if self.image is not None:
+        if self.original_image is not None:
             if direction == 0:
                 self.image = self.image.mirrored(True, False)
                 self.original_image = self.original_image.mirrored(True, False)

@@ -6,7 +6,8 @@ An open source cross-platform manga viewer.
 [![](https://gimu.org/hitagi-reader/alpha_screenshot.png)](https://gimu.org/hitagi-reader)
 
 ## Features
-- Scaling and modifying the viewed image
+- Advanced slideshow functions
+- Scaling and modifying the image viewport
 - Saving/favoriting directory paths
 - Custom hotkey management
 - Various localizations

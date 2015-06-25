@@ -31,10 +31,10 @@ class SettingsController(object):
         self.model.set('Look', 'background', str(color.name(QColor.HexRgb)))
         self.model.announce_update()
 
-    def update_boolean(self, option, state):
+    def update_boolean(self, parent, option, state):
         """Handle switches."""
         state = True if state == 2 else False
-        self.model.set('Misc', option, str(state))
+        self.model.set(parent, option, str(state))
         self.model.announce_update()
 
     def update_viewport_behaviour(self, index):
@@ -43,6 +43,11 @@ class SettingsController(object):
             self.model.set('Viewport', 'selection', str(index))
             self.model.announce_update()
 
+    def update_slideshow_speed(self, value):
+        if value >= 0:
+            self.model.set('Slideshow', 'speed', str(value))
+            self.model.announce_update()
+            
     def update_locale(self, index):
         if index >= 0:
             locale_code = self.model.get_locale_code(index)

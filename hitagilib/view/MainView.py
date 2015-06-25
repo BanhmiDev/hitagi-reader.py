@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import webbrowser
 
-from PyQt5.QtCore import QTimer, QThread, QDir, Qt, QObject, pyqtSignal, QModelIndex, QCoreApplication
+from PyQt5.QtCore import QDir, Qt, QModelIndex, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QBrush, QColor
 from PyQt5.QtWidgets import QMainWindow, QFileSystemModel, QGraphicsScene, QDesktopWidget, QAbstractItemView, QShortcut, QMessageBox
 
@@ -18,7 +18,6 @@ class MainView(QMainWindow):
     def __init__(self, model, controller):
         self.settings = SettingsModel()
         self.slideshow = SlideshowModel()
-        self.slideshow.updateSignal.connect(self.on_next_item)
 
         self.model = model
         self.canvas = self.model.canvas
@@ -28,6 +27,17 @@ class MainView(QMainWindow):
         self.build_ui()
         self.center_ui()
 
+        # Slideshow
+        if self.settings.get('Slideshow', 'reverse') == 'True':
+            self.slideshow.updateSignal.connect(self.on_previous_item)
+            
+            #index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
+            index = self.ui.treeView.moveCursor(QAbstractItemView.MoveEnd, Qt.NoModifier)
+            self.ui.treeView.setCurrentIndex(index)
+            print("lel")
+        else:
+            self.slideshow.updateSignal.connect(self.on_next_item)
+            
         self.model.subscribe_update_func(self.update_ui_from_model)
 
     def build_ui(self):
@@ -75,7 +85,7 @@ class MainView(QMainWindow):
         # File listing
         self.file_model = QFileSystemModel()
         self.file_model.setFilter(QDir.NoDotAndDotDot | QDir.AllDirs | QDir.Files)
-        self.file_model.setNameFilters(['*.gif', '*.jpeg', '*.jpg', '*.png', '*.bmp'])
+        self.file_model.setNameFilters(['*.bmp', '*.gif', '*.jpg', '*.jpeg', '*.png', '*.png', '*.pbm', '*.pgm', '*.ppm', '*.xbm', '*.xpm'])
         self.file_model.setNameFilterDisables(False)
         self.file_model.setRootPath(self.settings.get('Directory', 'default'))
 
@@ -140,6 +150,10 @@ class MainView(QMainWindow):
    
     # On show
     def showEvent(self, e):
+        # Start in fullscreen mode according to settings
+        if self.settings.get('Misc', 'fullscreen_mode') == 'True':
+            self.on_fullscreen()
+            
         # Initialize container geometry to canvas
         self.canvas_controller.update(self.ui.graphicsView.width(), self.ui.graphicsView.height())
         self.main_controller.update_canvas()
@@ -205,14 +219,26 @@ class MainView(QMainWindow):
 
     # Folder menu
     def on_next_item(self):
-        index = self.ui.treeView.moveCursor(QAbstractItemView.MoveDown, Qt.NoModifier)
-        self.ui.treeView.setCurrentIndex(index)
-        self.main_controller.open_image(self.file_model.filePath(index))
+        current_index = self.ui.treeView.currentIndex()
+        # Slideshow function - determine if we are at the end of our file list
+        if self.slideshow.is_running and not self.ui.treeView.indexBelow(current_index).isValid():
+            self.main_controller.open_image(self.file_model.filePath(current_index))
+            self.on_slideshow_restart(0) # Restart slideshow
+        else: # Scroll down
+            index = self.ui.treeView.moveCursor(QAbstractItemView.MoveDown, Qt.NoModifier)
+            self.ui.treeView.setCurrentIndex(index)
+            self.main_controller.open_image(self.file_model.filePath(index))
 
     def on_previous_item(self):
-        index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
-        self.ui.treeView.setCurrentIndex(index)
-        self.main_controller.open_image(self.file_model.filePath(index))
+        current_index = self.ui.treeView.currentIndex()
+        # Slideshow function (reverse) - determine if we are the the top of our file list
+        if self.slideshow.is_running and not self.ui.treeView.indexAbove(current_index).isValid():
+            self.main_controller.open_image(self.file_model.filePath(current_index))
+            self.on_slideshow_restart(1) # Restart slideshow
+        else: # Scroll up
+            index = self.ui.treeView.moveCursor(QAbstractItemView.MoveUp, Qt.NoModifier)
+            self.ui.treeView.setCurrentIndex(index)
+            self.main_controller.open_image(self.file_model.filePath(index))
 
     def on_slideshow(self):
         if self.ui.actionSlideshow.isChecked():
@@ -222,6 +248,20 @@ class MainView(QMainWindow):
             self.slideshow.is_running = False
             self.slideshow.exit()
 
+    def on_slideshow_restart(self, direction):
+        print("test")
+        # 0: Restart from top to bottom
+        # 1: Restart from bottom to top
+        if direction == 0:
+            index = self.ui.treeView.moveCursor(QAbstractItemView.MoveHome, Qt.NoModifier)
+            self.main_controller.open_image(self.file_model.filePath(index))
+        else:
+            index = self.ui.treeView.moveCursor(QAbstractItemView.MoveEnd, Qt.NoModifier)
+            self.main_controller.open_image(self.file_model.filePath(index))
+
+        self.ui.treeView.setCurrentIndex(index)
+            
+        
     def on_change_directory(self):
         self.main_controller.change_directory()
 

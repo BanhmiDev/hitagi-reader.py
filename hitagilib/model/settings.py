@@ -12,9 +12,10 @@ class SettingsModel(ConfigParser):
         [Hotkeys]
         Exit = Ctrl+X
         Fullscreen = F
-        Directory = D
         Next = Right
         Previous = Left
+        Directory = D
+        Slideshow = F3
         Zoom in = Ctrl++
         Zoom out = Ctrl+-
         Zoom original = Ctrl+0

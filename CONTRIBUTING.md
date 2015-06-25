@@ -3,7 +3,7 @@ Contributing to Hitagi Reader
 This file contains guidelines for contributing to Hitagi Reader, as well as instructions on how to do so.
 
 ## Prerequisites
-Hitagi Reader is build upon the PyQt5 library.
+Hitagi Reader is build upon the PyQt5 library.                                     
 The latest build is optimized for Python 3 and should not differ much from older Python versions.                          
 Pull requests for backward-compatibility changes are always welcome.
 
