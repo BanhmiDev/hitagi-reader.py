@@ -17,24 +17,18 @@ class WallpaperDialog(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
-        self.scene = QGraphicsScene()
-
-        self.ui.graphicsView.setScene(self.scene)
-        self.pixmap_item = QGraphicsPixmapItem(QPixmap.fromImage(self.image))
-        self.scene.addItem(self.pixmap_item)
-        self.scene.update()
-
         self.ui.button_set_as_wallpaper.clicked.connect(self.on_set_as_wallpaper)
         self.ui.button_cancel.clicked.connect(self.close)
 
     def on_set_as_wallpaper(self):
         if self.ui.radio_original_size.isChecked():
-            _radio = 0
+            radio = 0
         elif self.ui.radio_tiled.isChecked():
-            _radio = 1
+            radio = 1
         elif self.ui.radio_fit_to_width.isChecked():
-            _radio = 2
+            radio = 2
         else:
-            _radio = 3
+            radio = 3
 
-        self.controller.set_as_wallpaper(_radio)
+        self.controller.set_as_wallpaper(radio)
+        self.close()
