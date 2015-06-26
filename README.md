@@ -25,16 +25,22 @@ You can choose between various modes and functions.
 - Fullscreen mode: Switch between normal and fullscreen mode
 
 ### Favorites
-You can save directory paths and access them via the menu toolbar.
+Save directory paths and access them via the menu toolbar.                       
+Paths are manually configurable in ```config.ini``` - like any other configuration.
 
 ### Hotkeys
-Customize almost any available hotkey for Hitagi Reader.
+Customize almost any available hotkey for Hitagi Reader.                              
+All applicable hotkeys can be found [here](https://github.com/gimu/hitagi-reader/wiki/Hotkeys).
 
-### Localizations
-Hitagi Reader is available in different languages.
+Head to the [wiki page](https://github.com/gimu/hitagi-reader/wiki) for more information.
 
 ## Installing
-Download the latest [Hitagi Reader release](https://github.com/gimu/hitagi-reader/releases).
+### Binaries
+Download the latest [Hitagi Reader release](https://github.com/gimu/hitagi-reader/releases) for your operating system.
+
+### Building
+Python 3 and PyQt5 is required to build from source.                                  
+Start Hitagi Reader by executing ```python Hitagi.py``` from within the main directory.
 
 ## Documentation
 Head to the [wiki page](https://github.com/gimu/hitagi-reader/wiki) for the official documentation.
