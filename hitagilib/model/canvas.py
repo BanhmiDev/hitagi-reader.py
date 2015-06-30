@@ -60,12 +60,13 @@ class CanvasModel(object):
             self.scene.addItem(CustomQGraphicsPixmapItem(QPixmap.fromImage(self.image), self.c_width, self.c_height))
             self.scene.update()
 
-    def rotate_image(self):
+    def rotate_image(self, rotation):
         if self.original_image is not None:
+            print(rotation)
             # Rotate the original and viewable image to ensure a constant workflow when modifying from canvas
             matrix = QTransform()
             matrix.translate(self.image.width() / 2, self.image.height() / 2)
-            matrix.rotate(90)
+            matrix.rotate(rotation)
             matrix.translate(-self.image.width() / 2, -self.image.height() / 2)
             
             # Save transformed image
@@ -73,7 +74,7 @@ class CanvasModel(object):
            
             original_matrix = QTransform()
             original_matrix.translate(self.original_image.width() / 2, self.original_image.height() / 2)
-            original_matrix.rotate(90)
+            original_matrix.rotate(rotation)
             original_matrix.translate(-self.original_image.width() / 2, -self.original_image.height() / 2)
             
             # Save transformed image

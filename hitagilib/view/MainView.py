@@ -64,6 +64,7 @@ class MainView(QMainWindow):
         self.ui.actionZoom_out.triggered.connect(self.on_zoom_out)
         self.ui.actionOriginal_size.triggered.connect(self.on_zoom_original)
         self.ui.actionRotate_clockwise.triggered.connect(self.on_rotate_clockwise)
+        self.ui.actionRotate_counterclockwise.triggered.connect(self.on_rotate_counterclockwise)
         self.ui.actionFlip_horizontally.triggered.connect(self.on_flip_horizontal)
         self.ui.actionFlip_vertically.triggered.connect(self.on_flip_vertical)
         self.ui.actionFit_image_width.triggered.connect(self.on_scale_image_to_width)
@@ -120,6 +121,7 @@ class MainView(QMainWindow):
         self.ui.actionZoom_out.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom out')))
         self.ui.actionOriginal_size.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Zoom original')))
         self.ui.actionRotate_clockwise.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Rotate clockwise')))
+        self.ui.actionRotate_counterclockwise.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Rotate counterclockwise')))
         self.ui.actionFlip_horizontally.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Flip horizontal')))
         self.ui.actionFlip_vertically.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Flip vertical')))
         self.ui.actionFit_image_width.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fit to width')))
@@ -304,7 +306,10 @@ class MainView(QMainWindow):
         self.canvas_controller.scale_image(0.9)
     
     def on_rotate_clockwise(self):
-        self.canvas_controller.rotate_image()
+        self.canvas_controller.rotate_image(90)
+
+    def on_rotate_counterclockwise(self):
+        self.canvas_controller.rotate_image(-90)
 
     def on_flip_horizontal(self):
         self.canvas_controller.flip_image(0)

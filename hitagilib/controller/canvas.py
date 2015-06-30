@@ -21,9 +21,9 @@ class CanvasController(object):
         """Scales image in canvas."""
         self.canvas.scale_image(factor)
     
-    def rotate_image(self):
-        """Rotate by 90 degrees (clockwise)."""
-        self.canvas.rotate_image()
+    def rotate_image(self, rotation):
+        """Rotate by x degrees."""
+        self.canvas.rotate_image(rotation)
 
     def flip_image(self, direction):
         """Flip current image."""
@@ -33,3 +33,4 @@ class CanvasController(object):
         else:
             # Vertical
             self.canvas.flip_image(1)
+            

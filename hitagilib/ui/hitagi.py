@@ -149,6 +149,8 @@ class Ui_Hitagi(object):
         self.actionFlip_vertically.setObjectName("actionFlip_vertically")
         self.actionUpload_to = QtWidgets.QAction(Hitagi)
         self.actionUpload_to.setObjectName("actionUpload_to")
+        self.actionRotate_counterclockwise = QtWidgets.QAction(Hitagi)
+        self.actionRotate_counterclockwise.setObjectName("actionRotate_counterclockwise")
         self.menuExit.addAction(self.actionSet_as_wallpaper)
         self.menuExit.addAction(self.actionCopy_to_clipboard)
         self.menuExit.addAction(self.actionOpen_current_directory)
@@ -172,6 +174,7 @@ class Ui_Hitagi(object):
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionRotate_clockwise)
         self.menuView.addSeparator()
+        self.menuView.addAction(self.actionRotate_counterclockwise)
         self.menuView.addAction(self.actionFlip_horizontally)
         self.menuView.addAction(self.actionFlip_vertically)
         self.menuView.addSeparator()
@@ -230,4 +233,4 @@ class Ui_Hitagi(object):
         self.actionFlip_horizontally.setText(_translate("Hitagi", "Flip horizontally"))
         self.actionFlip_vertically.setText(_translate("Hitagi", "Flip vertically"))
         self.actionUpload_to.setText(_translate("Hitagi", "Upload to..."))
-
+        self.actionRotate_counterclockwise.setText(_translate("Hitagi", "Rotate counterclockwise"))
