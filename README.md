@@ -39,8 +39,9 @@ Head to the [wiki page](https://github.com/gimu/hitagi-reader/wiki) for more inf
 Download the latest [Hitagi Reader release](https://github.com/gimu/hitagi-reader/releases) for your operating system.
 
 ### Building
-Python 3 and PyQt5 is required to build from source.                                  
-Start Hitagi Reader by executing ```python Hitagi.py``` from within the main directory.
+PyQt5 and cx_Freeze are required to build from source.
+1. Install cx_Freeze ```$ pip3 install cx_Freeze```.
+2. Build Hitagi Reader ```$ python setup.py build``` from within the main directory.
 
 ## Documentation
 Head to the [wiki page](https://github.com/gimu/hitagi-reader/wiki) for the official documentation.
