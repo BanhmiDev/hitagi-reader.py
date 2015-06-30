@@ -88,21 +88,37 @@ class MainController(object):
             if os.name == 'nt': # Windows
                 try:
                     subprocess.Popen(r'explorer /select,' + path)
+                    return True
                 except:
                     pass
             else: # Other OS
                 try:
-                    return subprocess.call(['thunar', path])
+                    subprocess.call(['thunar', path])
+                    return True
                 except:
                     pass
                 try:
-                    return subprocess.call(['nautilus', path])
+                    subprocess.call(['nautilus', path])
+                    return True
                 except:
                     pass
                 try:
-                    return subprocess.call(['xfe', path])
+                    subprocess.call(['dolphin', path])
+                except:
+                    pass
+                try:
+                    subprocess.call(['xfe', path])
+                    return True
+                except:
+                    pass
+                try:
+                    subprocess.call(['konqueror'], path)
+                except:
+                    pass
+                try:
+                    subprocess.call(['ranger'], path)
                 except:
                     pass
 
-            self.show_explorer_error()
+        return False
         

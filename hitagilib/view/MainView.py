@@ -225,7 +225,8 @@ class MainView(QMainWindow):
         self.main_controller.copy_to_clipboard()
 
     def on_current_dir(self):
-        self.main_controller.open_in_explorer()
+        if not self.main_controller.open_in_explorer():
+            self.show_explorer_error()
 
     def on_options(self):
         from hitagilib.view.OptionsView import OptionDialog
