@@ -39,7 +39,7 @@ def excepthook(exception_type, exception_value, traceback_obj):
     # Combine and write to file
     msg = '\n'.join(sections)
     try:
-        f = open("error.log", "w")
+        f = open('error.log', 'w')
         f.write(msg)
         f.close()
     except IOError:
@@ -47,7 +47,7 @@ def excepthook(exception_type, exception_value, traceback_obj):
 
     # GUI message
     error_box = QMessageBox()
-    error_box.setWindowTitle("Error occured")
+    error_box.setWindowTitle('Error occured')
     error_box.setText(str(notice) + str(msg))
     error_box.exec_()
 
@@ -59,24 +59,27 @@ def run():
 
     # Splash screen
     splash_pix = QPixmap('resources/splash.jpg')
-    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    splash = QSplashScreen(splash_pix)
     splash.setMask(splash_pix.mask())
     splash.show()
+    
     app.processEvents()
-
+    
     # Load translation
     locale_code = SettingsModel().get('Language', 'code')
     if locale_code != "en_US": # Standard language
+        # Standard translator for the generated GUI
         translator = QTranslator()
         translator.load('localization/' + locale_code + '.qm')
         app.installTranslator(translator)
 
+        # Translator for various GUI elements
         translator_2 = QTranslator()
         translator_2.load('localization/' + locale_code + '_2.qm')
         app.installTranslator(translator_2)
 
     # Start
     m = Hitagi()
-
+    
     splash.finish(m)
     sys.exit(app.exec())
