@@ -385,6 +385,10 @@ class MainView(QMainWindow):
 
     def on_fileWidget_visibilityChanged(self, visible):
         """On file list hide/show and de/attachment"""
+        if visible:
+            self.ui.actionFile_list.setChecked(True)
+        else:
+            self.ui.actionFile_list.setChecked(False)
         self.update_resize_timer(300)
 
     def show_explorer_error(self):
