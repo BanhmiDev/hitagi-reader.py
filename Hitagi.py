@@ -2,4 +2,8 @@
 if __name__ == '__main__':
     import sys
     from hitagilib import Hitagi
-    sys.exit(Hitagi.run())
+
+    if len(sys.argv) > 1:
+        sys.exit(Hitagi.run(sys.argv[1]))
+    else:
+        sys.exit(Hitagi.run())

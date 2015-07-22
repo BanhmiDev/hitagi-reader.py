@@ -11,11 +11,11 @@ from hitagilib.controller.main import MainController
 from hitagilib.view.MainView import MainView
 
 class Hitagi(QMainWindow):
-    def __init__(self):
+    def __init__(self, image_path):
         super(Hitagi, self).__init__()
         self.model = AppModel()
-        self.main_controller = MainController(self.model)
-        self.main_view = MainView(self.model, self.main_controller)
+        self.main_controller = MainController(self.model) # Pass our argument to controller
+        self.main_view = MainView(self.model, self.main_controller, image_path)
         self.main_view.show()
 
 def excepthook(exception_type, exception_value, traceback_obj):
@@ -51,7 +51,7 @@ def excepthook(exception_type, exception_value, traceback_obj):
     error_box.setText(str(notice) + str(msg))
     error_box.exec_()
 
-def run():
+def run(image_path = None):
     # Global exceptions
     sys.excepthook = excepthook
 
@@ -79,7 +79,7 @@ def run():
         app.installTranslator(translator_2)
 
     # Start
-    m = Hitagi()
+    m = Hitagi(image_path) # Pass image path
     
     splash.finish(m)
     sys.exit(app.exec())

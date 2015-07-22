@@ -23,7 +23,8 @@ class CanvasModel(object):
         self.scene.setSceneRect(0, 0, self.c_width, self.c_height)
 
     def update_image(self, selection):
-        if self.original_image is not None:
+        # Check for container width to prevent behaviour when container is not initialized yet (ex. passing an image as argument)
+        if self.original_image is not None and self.c_width != 0:
             # Selection defines the viewport behaviour
             # 0: Ratio scaling (uses canvas/image-size)
             # 1: Scale to container width

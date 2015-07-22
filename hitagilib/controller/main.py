@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+from os import path
 
 from PyQt5.QtGui import QImage, QClipboard
 from PyQt5.QtWidgets import QFileDialog
@@ -16,11 +17,17 @@ class MainController(object):
         self.model = model
         self.canvas = CanvasController(self.model.canvas)
 
-        self.start()
-
-    def start(self):
+    def start(self, image_path):
         """Initial calls."""
-        self.change_directory(self.settings.get('Directory', 'default'))
+        if image_path is not None: # Passed as argument
+            directory_path = path.dirname(image_path)
+            if not directory_path: # Prevent empty/falsy arguments
+                self.change_directory(self.settings.get('Directory', 'default'))
+            else:
+                self.change_directory(directory_path)
+                self.open_image(image_path)
+        else:
+            self.change_directory(self.settings.get('Directory', 'default'))
 
     def change_directory(self, directory = None):
         """Change current directory."""
@@ -67,11 +74,9 @@ class MainController(object):
     def open_image(self, path):
         """Open specific image via path."""
         image = QImage(str(path))
-        if image.isNull():
-            image = None
-            
-        self.model.image_path = path
-        self.canvas.update_image(self.settings.getint('Viewport', 'selection'), image)
+        if not image.isNull():
+            self.model.image_path = path
+            self.canvas.update_image(self.settings.getint('Viewport', 'selection'), image)
 
     def copy_to_clipboard(self):
         """Open current image to clipboard."""

@@ -18,7 +18,7 @@ class MainView(QMainWindow):
 
     resizeCompleted = pyqtSignal()
 
-    def __init__(self, model, controller):
+    def __init__(self, model, controller, image_path):
         self.settings = SettingsModel()
         self.slideshow = SlideshowModel()
 
@@ -41,6 +41,10 @@ class MainView(QMainWindow):
             self.slideshow.updateSignal.connect(self.on_next_item)
             
         self.model.subscribe_update_func(self.update_ui_from_model)
+
+        self.arguments = {
+            'image_path': image_path
+        }
 
     def build_ui(self):
         self.ui = Ui_Hitagi()
@@ -136,6 +140,8 @@ class MainView(QMainWindow):
 
         # Save current height for fullscreen mode
         self.default_menubar_height = self.ui.menubar.height()
+        # Save current width for file list
+        self.default_filelist_width = self.ui.fileWidget.width()
 
     def load_favorites(self):
         self.favorites = FavoritesModel()
@@ -154,6 +160,8 @@ class MainView(QMainWindow):
    
     # Qt show event
     def showEvent(self, event):
+        self.main_controller.start(self.arguments['image_path']) # Arguments and starting behaviour
+
         # Start in fullscreen mode according to settings
         if self.settings.get('Misc', 'fullscreen_mode') == 'True':
             self.on_fullscreen()
@@ -328,11 +336,12 @@ class MainView(QMainWindow):
         self.canvas_controller.update_image(3)
 
     def on_toggle_filelist(self):
-        if self.ui.actionFile_list.isChecked():
+        if self.ui.fileWidget.isHidden():
             self.ui.fileWidget.show()
         else:
             self.ui.fileWidget.hide()
-
+        self.update_resize_timer(300)
+        
     def on_fullscreen(self):
         self.main_controller.toggle_fullscreen()
         
@@ -373,6 +382,10 @@ class MainView(QMainWindow):
         from hitagilib.view.AboutView import AboutDialog
         dialog = AboutDialog(self, None, None)
         dialog.show()
+
+    def on_fileWidget_visibilityChanged(self, visible):
+        """On file list hide/show and de/attachment"""
+        self.update_resize_timer(300)
 
     def show_explorer_error(self):
         notify = QMessageBox()
