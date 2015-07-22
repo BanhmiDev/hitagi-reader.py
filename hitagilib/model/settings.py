@@ -69,20 +69,29 @@ class SettingsModel(ConfigParser):
         if not self.has_section('Favorites'):
             self.add_section('Favorites')
 
-        # Add missing options (with default keybindings)
+        # Add missing options with default keybindings
         if not self.has_option('Directory', 'default'):
             self.set('Directory', 'default', '/')
 
+        # Keybindings
         if not self.has_option('Hotkeys', 'Exit'):
             self.set('Hotkeys', 'Exit', 'Ctrl+X')
-        if not self.has_option('Hotkeys', 'Fullscreen'):
-            self.set('Hotkeys', 'Fullscreen', 'F')
-        if not self.has_option('Hotkeys', 'Directory'):
-            self.set('Hotkeys', 'Directory', 'D')
+
+        # Folder
         if not self.has_option('Hotkeys', 'Next'):
             self.set('Hotkeys', 'Next', 'Right')
         if not self.has_option('Hotkeys', 'Previous'):
             self.set('Hotkeys', 'Previous', 'Left')
+        if not self.has_option('Hotkeys', 'Directory'):
+            self.set('Hotkeys', 'Directory', 'D')
+        if not self.has_option('Hotkeys', 'Add to favorites'):
+            self.set('Hotkeys', 'Add to favorites', '')
+        if not self.has_option('Hotkeys', 'Remove from favorites'):
+            self.set('Hotkeys', 'Remove from favorites', '')
+        if not self.has_option('Hotkeys', 'Slideshow'):
+            self.set('Hotkeys', 'Slideshow', 'F3')
+
+        # View
         if not self.has_option('Hotkeys', 'Zoom in'):
             self.set('Hotkeys', 'Zoom in', 'Ctrl++')
         if not self.has_option('Hotkeys', 'Zoom out'):
@@ -93,7 +102,6 @@ class SettingsModel(ConfigParser):
             self.set('Hotkeys', 'Rotate clockwise', '')
         if not self.has_option('Hotkeys', 'Rotate counterclockwise'):
             self.set('Hotkeys', 'Rotate counterclockwise', '')
-
         if not self.has_option('Hotkeys', 'Flip horizontal'):
             self.set('Hotkeys', 'Flip horizontal', '')
         if not self.has_option('Hotkeys', 'Flip vertical'):
@@ -102,12 +110,10 @@ class SettingsModel(ConfigParser):
             self.set('Hotkeys', 'Fit to width', '')
         if not self.has_option('Hotkeys', 'Fit to height'):
             self.set('Hotkeys', 'Fit to height', '')
-        if not self.has_option('Hotkeys', 'Add to favorites'):
-            self.set('Hotkeys', 'Add to favorites', '')
-        if not self.has_option('Hotkeys', 'Remove from favorites'):
-            self.set('Hotkeys', 'Remove from favorites', '')
-        if not self.has_option('Hotkeys', 'Slideshow'):
-            self.set('Hotkeys', 'Slideshow', 'F3')
+        if not self.has_option('Hotkeys', 'Toggle filelist'):
+            self.set('Hotkeys', 'Toggle filelist', '')
+        if not self.has_option('Hotkeys', 'Fullscreen'):
+            self.set('Hotkeys', 'Fullscreen', 'F')
 
         if not self.has_option('Language', 'code'):
             self.set('Language', 'code', 'en_US')

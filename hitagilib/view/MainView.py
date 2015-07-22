@@ -130,6 +130,7 @@ class MainView(QMainWindow):
         self.ui.actionFlip_vertically.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Flip vertical')))
         self.ui.actionFit_image_width.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fit to width')))
         self.ui.actionFit_image_height.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fit to height')))
+        self.ui.actionFile_list.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Toggle filelist')))
         self.ui.actionFullscreen.setShortcut(_translate("Hitagi", self.settings.get('Hotkeys', 'Fullscreen')))
 
         # Load favorites in UI

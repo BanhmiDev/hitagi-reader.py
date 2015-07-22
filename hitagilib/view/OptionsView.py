@@ -64,10 +64,11 @@ class OptionDialog(QDialog):
     def generate_hotkey_list(self):
         """Generate the hotkey list."""
         for option in self.model.options('Hotkeys'):
-            item = QListWidgetItem()
-            item.setText(option)
-            item.setData(Qt.UserRole, self.model.get('Hotkeys', option))
-            self.ui.listWidget_hotkey.addItem(item)
+            if not option.startswith(';'):
+                item = QListWidgetItem()
+                item.setText(option)
+                item.setData(Qt.UserRole, self.model.get('Hotkeys', option))
+                self.ui.listWidget_hotkey.addItem(item)
 
     # Layout tab
     def on_update_default_directory(self):
