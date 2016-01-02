@@ -3,7 +3,7 @@ Hitagi Reader
 [![Supported Browsers](https://img.shields.io/badge/platforms-win%20|%20osx%20|%20linux-green.svg?style=flat-square)](https://github.com/gimu/hitagi-reader/releases) [![Releases](https://img.shields.io/github/release/gimu/hitagi-reader.svg?style=flat-square)](https://github.com/gimu/hitagi-reader/releases) [![Issues](https://img.shields.io/github/issues/gimu/hitagi-reader.svg?style=flat-square)](https://github.com/gimu/hitagi-reader/issues)                                    
 An open source cross-platform image and manga viewer in development.
 
-[![](https://gimu.org/hitagi-reader/alpha_screenshot.png)](https://gimu.org/hitagi-reader)
+[![](https://gimu.org/images/hitagi-reader.png)](https://gimu.org/pages/hitagi-reader)
 
 ## Features
 Hitagi Reader provides customizable slideshows, keybindings available to remap, tons of viewport/image modification mechanics, a simple favoriting system and even [more features](https://github.com/gimu/hitagi-reader/wiki).
